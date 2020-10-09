@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>3.2 Feature Selection / Filtering | mlr3 book</title>
+  <meta name="description" content="3.2 Feature Selection / Filtering | mlr3 book" />
+  <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="3.2 Feature Selection / Filtering | mlr3 book" />
+  <meta property="og:type" content="book" />
+  <meta property="og:url" content="https://mlr3book.mlr-org.com/" />
+  <meta property="og:image" content="https://mlr3book.mlr-org.com/block.png" />
+  
+  <meta name="github-repo" content="mlr-org/mlr3book" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="3.2 Feature Selection / Filtering | mlr3 book" />
+  
+  
+  <meta name="twitter:image" content="https://mlr3book.mlr-org.com/block.png" />
+
+<meta name="author" content="Michel Lang" />
+<meta name="author" content="Patrick Schratz" />
+<meta name="author" content="Martin Binder" />
+<meta name="author" content="Florian Pfisterer" />
+<meta name="author" content="Jakob Richter" />
+<meta name="author" content="Nicholas G. Reich" />
+<meta name="author" content="Bernd Bischl" />
+<meta name="author" content="Marc Becker" />
+
+
+<meta name="date" content="2020-10-09" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <link rel="apple-touch-icon-precomposed" sizes="180x180" href="apple-touch-icon.png" />
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+<link rel="prev" href="tuning.html"/>
+<link rel="next" href="nested-resampling.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
+
+
+<style type="text/css">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">mlr3 Manual <img src='https://raw.githubusercontent.com/mlr-org/mlr3/master/man/figures/logo.png' width=30 /></a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Citation Info</a></li>
+<li class="chapter" data-level="" data-path="quickstart.html"><a href="quickstart.html"><i class="fa fa-check"></i>Quickstart</a></li>
+<li class="chapter" data-level="1" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction and Overview</a></li>
+<li class="chapter" data-level="2" data-path="basics.html"><a href="basics.html"><i class="fa fa-check"></i><b>2</b> Basics</a><ul>
+<li class="chapter" data-level="2.1" data-path="r6.html"><a href="r6.html"><i class="fa fa-check"></i><b>2.1</b> Quick R6 Intro for Beginners</a></li>
+<li class="chapter" data-level="2.2" data-path="tasks.html"><a href="tasks.html"><i class="fa fa-check"></i><b>2.2</b> Tasks</a><ul>
+<li class="chapter" data-level="2.2.1" data-path="tasks.html"><a href="tasks.html#tasks-types"><i class="fa fa-check"></i><b>2.2.1</b> Task Types</a></li>
+<li class="chapter" data-level="2.2.2" data-path="tasks.html"><a href="tasks.html#tasks-creation"><i class="fa fa-check"></i><b>2.2.2</b> Task Creation</a></li>
+<li class="chapter" data-level="2.2.3" data-path="tasks.html"><a href="tasks.html#tasks-predefined"><i class="fa fa-check"></i><b>2.2.3</b> Predefined tasks</a></li>
+<li class="chapter" data-level="2.2.4" data-path="tasks.html"><a href="tasks.html#tasks-api"><i class="fa fa-check"></i><b>2.2.4</b> Task API</a><ul>
+<li class="chapter" data-level="2.2.4.1" data-path="tasks.html"><a href="tasks.html#tasks-retrieving"><i class="fa fa-check"></i><b>2.2.4.1</b> Retrieving Data</a></li>
+<li class="chapter" data-level="2.2.4.2" data-path="tasks.html"><a href="tasks.html#tasks-roles"><i class="fa fa-check"></i><b>2.2.4.2</b> Roles (Rows and Columns)</a></li>
+<li class="chapter" data-level="2.2.4.3" data-path="tasks.html"><a href="tasks.html#tasks-mutators"><i class="fa fa-check"></i><b>2.2.4.3</b> Task Mutators</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2.5" data-path="tasks.html"><a href="tasks.html#autoplot-task"><i class="fa fa-check"></i><b>2.2.5</b> Plotting Tasks</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="learners.html"><a href="learners.html"><i class="fa fa-check"></i><b>2.3</b> Learners</a><ul>
+<li class="chapter" data-level="2.3.1" data-path="learners.html"><a href="learners.html#learners-predefined"><i class="fa fa-check"></i><b>2.3.1</b> Predefined Learners</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="train-predict.html"><a href="train-predict.html"><i class="fa fa-check"></i><b>2.4</b> Train and Predict</a><ul>
+<li class="chapter" data-level="2.4.1" data-path="train-predict.html"><a href="train-predict.html#train-predict-objects"><i class="fa fa-check"></i><b>2.4.1</b> Creating Task and Learner Objects</a></li>
+<li class="chapter" data-level="2.4.2" data-path="train-predict.html"><a href="train-predict.html#split-data"><i class="fa fa-check"></i><b>2.4.2</b> Setting up the train/test splits of the data</a></li>
+<li class="chapter" data-level="2.4.3" data-path="train-predict.html"><a href="train-predict.html#training"><i class="fa fa-check"></i><b>2.4.3</b> Training the learner</a></li>
+<li class="chapter" data-level="2.4.4" data-path="train-predict.html"><a href="train-predict.html#predicting"><i class="fa fa-check"></i><b>2.4.4</b> Predicting</a></li>
+<li class="chapter" data-level="2.4.5" data-path="train-predict.html"><a href="train-predict.html#predict-type"><i class="fa fa-check"></i><b>2.4.5</b> Changing the Predict Type</a></li>
+<li class="chapter" data-level="2.4.6" data-path="train-predict.html"><a href="train-predict.html#autoplot-prediction"><i class="fa fa-check"></i><b>2.4.6</b> Plotting Predictions</a></li>
+<li class="chapter" data-level="2.4.7" data-path="train-predict.html"><a href="train-predict.html#measure"><i class="fa fa-check"></i><b>2.4.7</b> Performance assessment</a></li>
+</ul></li>
+<li class="chapter" data-level="2.5" data-path="resampling.html"><a href="resampling.html"><i class="fa fa-check"></i><b>2.5</b> Resampling</a><ul>
+<li class="chapter" data-level="2.5.1" data-path="resampling.html"><a href="resampling.html#resampling-settings"><i class="fa fa-check"></i><b>2.5.1</b> Settings</a></li>
+<li class="chapter" data-level="2.5.2" data-path="resampling.html"><a href="resampling.html#resampling-inst"><i class="fa fa-check"></i><b>2.5.2</b> Instantiation</a></li>
+<li class="chapter" data-level="2.5.3" data-path="resampling.html"><a href="resampling.html#resampling-exec"><i class="fa fa-check"></i><b>2.5.3</b> Execution</a></li>
+<li class="chapter" data-level="2.5.4" data-path="resampling.html"><a href="resampling.html#resamp-custom"><i class="fa fa-check"></i><b>2.5.4</b> Custom resampling</a></li>
+<li class="chapter" data-level="2.5.5" data-path="resampling.html"><a href="resampling.html#autoplot-resampleresult"><i class="fa fa-check"></i><b>2.5.5</b> Plotting Resample Results</a></li>
+</ul></li>
+<li class="chapter" data-level="2.6" data-path="benchmarking.html"><a href="benchmarking.html"><i class="fa fa-check"></i><b>2.6</b> Benchmarking</a><ul>
+<li class="chapter" data-level="2.6.1" data-path="benchmarking.html"><a href="benchmarking.html#bm-design"><i class="fa fa-check"></i><b>2.6.1</b> Design Creation</a></li>
+<li class="chapter" data-level="2.6.2" data-path="benchmarking.html"><a href="benchmarking.html#bm-exec"><i class="fa fa-check"></i><b>2.6.2</b> Execution and Aggregation of Results</a></li>
+<li class="chapter" data-level="2.6.3" data-path="benchmarking.html"><a href="benchmarking.html#autoplot-benchmarkresult"><i class="fa fa-check"></i><b>2.6.3</b> Plotting Benchmark Results</a></li>
+<li class="chapter" data-level="2.6.4" data-path="benchmarking.html"><a href="benchmarking.html#bm-resamp"><i class="fa fa-check"></i><b>2.6.4</b> Extracting ResampleResults</a></li>
+<li class="chapter" data-level="2.6.5" data-path="benchmarking.html"><a href="benchmarking.html#converting-and-merging-resampleresults"><i class="fa fa-check"></i><b>2.6.5</b> Converting and Merging ResampleResults</a></li>
+</ul></li>
+<li class="chapter" data-level="2.7" data-path="binary-classification.html"><a href="binary-classification.html"><i class="fa fa-check"></i><b>2.7</b> Binary classification</a><ul>
+<li class="chapter" data-level="2.7.1" data-path="binary-classification.html"><a href="binary-classification.html#binary-roc"><i class="fa fa-check"></i><b>2.7.1</b> ROC Curve and Thresholds</a></li>
+<li class="chapter" data-level="2.7.2" data-path="binary-classification.html"><a href="binary-classification.html#threshold-tuning"><i class="fa fa-check"></i><b>2.7.2</b> Threshold Tuning</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="optimization.html"><a href="optimization.html"><i class="fa fa-check"></i><b>3</b> Model Optimization</a><ul>
+<li class="chapter" data-level="3.1" data-path="tuning.html"><a href="tuning.html"><i class="fa fa-check"></i><b>3.1</b> Hyperparameter Tuning</a><ul>
+<li class="chapter" data-level="3.1.1" data-path="tuning.html"><a href="tuning.html#tuning-optimization"><i class="fa fa-check"></i><b>3.1.1</b> The <code>TuningInstance</code> Classes</a></li>
+<li class="chapter" data-level="3.1.2" data-path="tuning.html"><a href="tuning.html#the-tuner-class"><i class="fa fa-check"></i><b>3.1.2</b> The <code>Tuner</code> Class</a></li>
+<li class="chapter" data-level="3.1.3" data-path="tuning.html"><a href="tuning.html#tuning-triggering"><i class="fa fa-check"></i><b>3.1.3</b> Triggering the Tuning</a></li>
+<li class="chapter" data-level="3.1.4" data-path="tuning.html"><a href="tuning.html#autotuner"><i class="fa fa-check"></i><b>3.1.4</b> Automating the Tuning</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="fs.html"><a href="fs.html"><i class="fa fa-check"></i><b>3.2</b> Feature Selection / Filtering</a><ul>
+<li class="chapter" data-level="3.2.1" data-path="fs.html"><a href="fs.html#fs-filter"><i class="fa fa-check"></i><b>3.2.1</b> Filters</a></li>
+<li class="chapter" data-level="3.2.2" data-path="fs.html"><a href="fs.html#fs-calc"><i class="fa fa-check"></i><b>3.2.2</b> Calculating filter values</a></li>
+<li class="chapter" data-level="3.2.3" data-path="fs.html"><a href="fs.html#fs-var-imp-filters"><i class="fa fa-check"></i><b>3.2.3</b> Variable Importance Filters</a></li>
+<li class="chapter" data-level="3.2.4" data-path="fs.html"><a href="fs.html#fs-ensemble"><i class="fa fa-check"></i><b>3.2.4</b> Ensemble Methods</a></li>
+<li class="chapter" data-level="3.2.5" data-path="fs.html"><a href="fs.html#fs-wrapper"><i class="fa fa-check"></i><b>3.2.5</b> Wrapper Methods</a></li>
+<li class="chapter" data-level="3.2.6" data-path="fs.html"><a href="fs.html#fs-wrapper-optimization"><i class="fa fa-check"></i><b>3.2.6</b> The <code>FSelectInstance</code> Classes</a></li>
+<li class="chapter" data-level="3.2.7" data-path="fs.html"><a href="fs.html#the-fselector-class"><i class="fa fa-check"></i><b>3.2.7</b> The <code>FSelector</code> Class</a></li>
+<li class="chapter" data-level="3.2.8" data-path="fs.html"><a href="fs.html#wrapper-selection-triggering"><i class="fa fa-check"></i><b>3.2.8</b> Triggering the Tuning</a></li>
+<li class="chapter" data-level="3.2.9" data-path="fs.html"><a href="fs.html#autofselect"><i class="fa fa-check"></i><b>3.2.9</b> Automating the Feature Selection</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="nested-resampling.html"><a href="nested-resampling.html"><i class="fa fa-check"></i><b>3.3</b> Nested Resampling</a><ul>
+<li class="chapter" data-level="3.3.1" data-path="nested-resampling.html"><a href="nested-resampling.html#nested-resamp-exec"><i class="fa fa-check"></i><b>3.3.1</b> Execution</a></li>
+<li class="chapter" data-level="3.3.2" data-path="nested-resampling.html"><a href="nested-resampling.html#nested-resamp-eval"><i class="fa fa-check"></i><b>3.3.2</b> Evaluation</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="pipelines.html"><a href="pipelines.html"><i class="fa fa-check"></i><b>4</b> Pipelines</a><ul>
+<li class="chapter" data-level="4.1" data-path="pipe-pipeops.html"><a href="pipe-pipeops.html"><i class="fa fa-check"></i><b>4.1</b> The Building Blocks: PipeOps</a></li>
+<li class="chapter" data-level="4.2" data-path="pipe-operator.html"><a href="pipe-operator.html"><i class="fa fa-check"></i><b>4.2</b> The Pipeline Operator: <code>%&gt;&gt;%</code></a></li>
+<li class="chapter" data-level="4.3" data-path="pipe-nodes-edges-graphs.html"><a href="pipe-nodes-edges-graphs.html"><i class="fa fa-check"></i><b>4.3</b> Nodes, Edges and Graphs</a></li>
+<li class="chapter" data-level="4.4" data-path="pipe-modeling.html"><a href="pipe-modeling.html"><i class="fa fa-check"></i><b>4.4</b> Modeling</a><ul>
+<li class="chapter" data-level="4.4.1" data-path="pipe-modeling.html"><a href="pipe-modeling.html#pipe-hyperpars"><i class="fa fa-check"></i><b>4.4.1</b> Setting Hyperparameters</a></li>
+<li class="chapter" data-level="4.4.2" data-path="pipe-modeling.html"><a href="pipe-modeling.html#pipe-tuning"><i class="fa fa-check"></i><b>4.4.2</b> Tuning</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="pipe-nonlinear.html"><a href="pipe-nonlinear.html"><i class="fa fa-check"></i><b>4.5</b> Non-Linear Graphs</a><ul>
+<li class="chapter" data-level="4.5.1" data-path="pipe-nonlinear.html"><a href="pipe-nonlinear.html#pipe-model-ensembles-branching-copying"><i class="fa fa-check"></i><b>4.5.1</b> Branching &amp; Copying</a></li>
+<li class="chapter" data-level="4.5.2" data-path="pipe-nonlinear.html"><a href="pipe-nonlinear.html#pipe-model-ensembles"><i class="fa fa-check"></i><b>4.5.2</b> Model Ensembles</a><ul>
+<li class="chapter" data-level="4.5.2.1" data-path="pipe-nonlinear.html"><a href="pipe-nonlinear.html#pipe-model-ensembles-bagging"><i class="fa fa-check"></i><b>4.5.2.1</b> Bagging</a></li>
+<li class="chapter" data-level="4.5.2.2" data-path="pipe-nonlinear.html"><a href="pipe-nonlinear.html#pipe-model-ensembles-stacking"><i class="fa fa-check"></i><b>4.5.2.2</b> Stacking</a></li>
+<li class="chapter" data-level="4.5.2.3" data-path="pipe-nonlinear.html"><a href="pipe-nonlinear.html#multilevel-stacking"><i class="fa fa-check"></i><b>4.5.2.3</b> Multilevel Stacking</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4.6" data-path="pipe-special-ops.html"><a href="pipe-special-ops.html"><i class="fa fa-check"></i><b>4.6</b> Special Operators</a><ul>
+<li class="chapter" data-level="4.6.1" data-path="pipe-special-ops.html"><a href="pipe-special-ops.html#imputation-pipeopimpute"><i class="fa fa-check"></i><b>4.6.1</b> Imputation: <code>PipeOpImpute</code></a></li>
+<li class="chapter" data-level="4.6.2" data-path="pipe-special-ops.html"><a href="pipe-special-ops.html#feature-engineering-pipeopmutate"><i class="fa fa-check"></i><b>4.6.2</b> Feature Engineering: <code>PipeOpMutate</code></a></li>
+<li class="chapter" data-level="4.6.3" data-path="pipe-special-ops.html"><a href="pipe-special-ops.html#training-on-data-subsets-pipeopchunk"><i class="fa fa-check"></i><b>4.6.3</b> Training on data subsets: <code>PipeOpChunk</code></a></li>
+<li class="chapter" data-level="4.6.4" data-path="pipe-special-ops.html"><a href="pipe-special-ops.html#feature-selection-pipeopfilter-and-pipeopselect"><i class="fa fa-check"></i><b>4.6.4</b> Feature Selection: <code>PipeOpFilter</code> and <code>PipeOpSelect</code></a></li>
+</ul></li>
+<li class="chapter" data-level="4.7" data-path="in-depth-pipelines.html"><a href="in-depth-pipelines.html"><i class="fa fa-check"></i><b>4.7</b> In-depth look into mlr3pipelines</a><ul>
+<li class="chapter" data-level="4.7.1" data-path="in-depth-pipelines.html"><a href="in-depth-pipelines.html#whats-the-point"><i class="fa fa-check"></i><b>4.7.1</b> What’s the Point</a></li>
+<li class="chapter" data-level="4.7.2" data-path="in-depth-pipelines.html"><a href="in-depth-pipelines.html#pipeop-pipeline-operators"><i class="fa fa-check"></i><b>4.7.2</b> <code>PipeOp</code>: Pipeline Operators</a><ul>
+<li class="chapter" data-level="4.7.2.1" data-path="in-depth-pipelines.html"><a href="in-depth-pipelines.html#why-the-state"><i class="fa fa-check"></i><b>4.7.2.1</b> Why the <code>$state</code></a></li>
+<li class="chapter" data-level="4.7.2.2" data-path="in-depth-pipelines.html"><a href="in-depth-pipelines.html#where-to-get-pipeops"><i class="fa fa-check"></i><b>4.7.2.2</b> Where to Get <code>PipeOp</code>s</a></li>
+</ul></li>
+<li class="chapter" data-level="4.7.3" data-path="in-depth-pipelines.html"><a href="in-depth-pipelines.html#pipeop-channels"><i class="fa fa-check"></i><b>4.7.3</b> PipeOp Channels</a><ul>
+<li class="chapter" data-level="4.7.3.1" data-path="in-depth-pipelines.html"><a href="in-depth-pipelines.html#input-channels"><i class="fa fa-check"></i><b>4.7.3.1</b> Input Channels</a></li>
+<li class="chapter" data-level="4.7.3.2" data-path="in-depth-pipelines.html"><a href="in-depth-pipelines.html#output-channels"><i class="fa fa-check"></i><b>4.7.3.2</b> Output Channels</a></li>
+<li class="chapter" data-level="4.7.3.3" data-path="in-depth-pipelines.html"><a href="in-depth-pipelines.html#channel-configuration"><i class="fa fa-check"></i><b>4.7.3.3</b> Channel Configuration</a></li>
+</ul></li>
+<li class="chapter" data-level="4.7.4" data-path="in-depth-pipelines.html"><a href="in-depth-pipelines.html#graph-networks-of-pipeops"><i class="fa fa-check"></i><b>4.7.4</b> <code>Graph</code>: Networks of <code>PipeOp</code>s</a><ul>
+<li class="chapter" data-level="4.7.4.1" data-path="basics.html"><a href="basics.html#basics"><i class="fa fa-check"></i><b>4.7.4.1</b> Basics</a></li>
+<li class="chapter" data-level="4.7.4.2" data-path="in-depth-pipelines.html"><a href="in-depth-pipelines.html#networks"><i class="fa fa-check"></i><b>4.7.4.2</b> Networks</a></li>
+<li class="chapter" data-level="4.7.4.3" data-path="in-depth-pipelines.html"><a href="in-depth-pipelines.html#syntactic-sugar"><i class="fa fa-check"></i><b>4.7.4.3</b> Syntactic Sugar</a></li>
+<li class="chapter" data-level="4.7.4.4" data-path="in-depth-pipelines.html"><a href="in-depth-pipelines.html#pipeop-ids-and-id-name-clashes"><i class="fa fa-check"></i><b>4.7.4.4</b> <code>PipeOp</code> IDs and ID Name Clashes</a></li>
+</ul></li>
+<li class="chapter" data-level="4.7.5" data-path="in-depth-pipelines.html"><a href="in-depth-pipelines.html#learners-in-graphs-graphs-in-learners"><i class="fa fa-check"></i><b>4.7.5</b> Learners in Graphs, Graphs in Learners</a><ul>
+<li class="chapter" data-level="4.7.5.1" data-path="in-depth-pipelines.html"><a href="in-depth-pipelines.html#pipeoplearner"><i class="fa fa-check"></i><b>4.7.5.1</b> <code>PipeOpLearner</code></a></li>
+<li class="chapter" data-level="4.7.5.2" data-path="in-depth-pipelines.html"><a href="in-depth-pipelines.html#graphlearner"><i class="fa fa-check"></i><b>4.7.5.2</b> <code>GraphLearner</code></a></li>
+</ul></li>
+<li class="chapter" data-level="4.7.6" data-path="in-depth-pipelines.html"><a href="in-depth-pipelines.html#hyperparameters"><i class="fa fa-check"></i><b>4.7.6</b> Hyperparameters</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="technical.html"><a href="technical.html"><i class="fa fa-check"></i><b>5</b> Technical</a><ul>
+<li class="chapter" data-level="5.1" data-path="parallelization.html"><a href="parallelization.html"><i class="fa fa-check"></i><b>5.1</b> Parallelization</a></li>
+<li class="chapter" data-level="5.2" data-path="error-handling.html"><a href="error-handling.html"><i class="fa fa-check"></i><b>5.2</b> Error Handling</a><ul>
+<li class="chapter" data-level="5.2.1" data-path="error-handling.html"><a href="error-handling.html#encapsulation"><i class="fa fa-check"></i><b>5.2.1</b> Encapsulation</a></li>
+<li class="chapter" data-level="5.2.2" data-path="error-handling.html"><a href="error-handling.html#fallback-learners"><i class="fa fa-check"></i><b>5.2.2</b> Fallback learners</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="backends.html"><a href="backends.html"><i class="fa fa-check"></i><b>5.3</b> Database Backends</a><ul>
+<li class="chapter" data-level="5.3.1" data-path="backends.html"><a href="backends.html#use-case-nyc-flights"><i class="fa fa-check"></i><b>5.3.1</b> Use Case: NYC Flights</a></li>
+<li class="chapter" data-level="5.3.2" data-path="backends.html"><a href="backends.html#preprocessing-with-dplyr"><i class="fa fa-check"></i><b>5.3.2</b> Preprocessing with <code>dplyr</code></a></li>
+<li class="chapter" data-level="5.3.3" data-path="backends.html"><a href="backends.html#databackenddplyr"><i class="fa fa-check"></i><b>5.3.3</b> DataBackendDplyr</a></li>
+<li class="chapter" data-level="5.3.4" data-path="backends.html"><a href="backends.html#model-fitting"><i class="fa fa-check"></i><b>5.3.4</b> Model fitting</a></li>
+<li class="chapter" data-level="5.3.5" data-path="backends.html"><a href="backends.html#cleanup"><i class="fa fa-check"></i><b>5.3.5</b> Cleanup</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4" data-path="paradox.html"><a href="paradox.html"><i class="fa fa-check"></i><b>5.4</b> Parameters (using <code>paradox</code>)</a><ul>
+<li class="chapter" data-level="5.4.1" data-path="paradox.html"><a href="paradox.html#reference-based-objects"><i class="fa fa-check"></i><b>5.4.1</b> Reference Based Objects</a></li>
+<li class="chapter" data-level="5.4.2" data-path="paradox.html"><a href="paradox.html#defining-a-parameter-space"><i class="fa fa-check"></i><b>5.4.2</b> Defining a Parameter Space</a><ul>
+<li class="chapter" data-level="5.4.2.1" data-path="paradox.html"><a href="paradox.html#single-parameters"><i class="fa fa-check"></i><b>5.4.2.1</b> Single Parameters</a></li>
+<li class="chapter" data-level="5.4.2.2" data-path="paradox.html"><a href="paradox.html#parameter-sets"><i class="fa fa-check"></i><b>5.4.2.2</b> Parameter Sets</a></li>
+<li class="chapter" data-level="5.4.2.3" data-path="paradox.html"><a href="paradox.html#vector-parameters"><i class="fa fa-check"></i><b>5.4.2.3</b> Vector Parameters</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4.3" data-path="paradox.html"><a href="paradox.html#parameter-sampling"><i class="fa fa-check"></i><b>5.4.3</b> Parameter Sampling</a><ul>
+<li class="chapter" data-level="5.4.3.1" data-path="paradox.html"><a href="paradox.html#parameter-designs"><i class="fa fa-check"></i><b>5.4.3.1</b> Parameter Designs</a></li>
+<li class="chapter" data-level="5.4.3.2" data-path="paradox.html"><a href="paradox.html#grid-design"><i class="fa fa-check"></i><b>5.4.3.2</b> Grid Design</a></li>
+<li class="chapter" data-level="5.4.3.3" data-path="paradox.html"><a href="paradox.html#random-sampling"><i class="fa fa-check"></i><b>5.4.3.3</b> Random Sampling</a></li>
+<li class="chapter" data-level="5.4.3.4" data-path="paradox.html"><a href="paradox.html#generalized-sampling-the-sampler-class"><i class="fa fa-check"></i><b>5.4.3.4</b> Generalized Sampling: The <code>Sampler</code> Class</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4.4" data-path="paradox.html"><a href="paradox.html#parameter-transformation"><i class="fa fa-check"></i><b>5.4.4</b> Parameter Transformation</a><ul>
+<li class="chapter" data-level="5.4.4.1" data-path="paradox.html"><a href="paradox.html#transformation-between-types"><i class="fa fa-check"></i><b>5.4.4.1</b> Transformation between Types</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5.5" data-path="logging.html"><a href="logging.html"><i class="fa fa-check"></i><b>5.5</b> Logging</a><ul>
+<li class="chapter" data-level="5.5.1" data-path="logging.html"><a href="logging.html#changing-mlr3-logging-levels"><i class="fa fa-check"></i><b>5.5.1</b> Changing mlr3 logging levels</a></li>
+<li class="chapter" data-level="5.5.2" data-path="logging.html"><a href="logging.html#redirecting-output"><i class="fa fa-check"></i><b>5.5.2</b> Redirecting output</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="extending.html"><a href="extending.html"><i class="fa fa-check"></i><b>6</b> Extending</a><ul>
+<li class="chapter" data-level="6.1" data-path="extending-learners.html"><a href="extending-learners.html"><i class="fa fa-check"></i><b>6.1</b> Adding new Learners</a><ul>
+<li class="chapter" data-level="6.1.1" data-path="extending-learners.html"><a href="extending-learners.html#learner-meta-information"><i class="fa fa-check"></i><b>6.1.1</b> Meta-information</a></li>
+<li class="chapter" data-level="6.1.2" data-path="extending-learners.html"><a href="extending-learners.html#learner-train"><i class="fa fa-check"></i><b>6.1.2</b> Train function</a></li>
+<li class="chapter" data-level="6.1.3" data-path="extending-learners.html"><a href="extending-learners.html#learner-predict"><i class="fa fa-check"></i><b>6.1.3</b> Predict function</a></li>
+<li class="chapter" data-level="6.1.4" data-path="extending-learners.html"><a href="extending-learners.html#learner-control"><i class="fa fa-check"></i><b>6.1.4</b> Control objects/functions of learners</a></li>
+<li class="chapter" data-level="6.1.5" data-path="extending-learners.html"><a href="extending-learners.html#learner-test"><i class="fa fa-check"></i><b>6.1.5</b> Testing the learner</a><ul>
+<li class="chapter" data-level="6.1.5.1" data-path="extending-learners.html"><a href="extending-learners.html#train-and-predict"><i class="fa fa-check"></i><b>6.1.5.1</b> Train and Predict</a></li>
+<li class="chapter" data-level="6.1.5.2" data-path="extending-learners.html"><a href="extending-learners.html#checking-parameters"><i class="fa fa-check"></i><b>6.1.5.2</b> Checking Parameters</a></li>
+</ul></li>
+<li class="chapter" data-level="6.1.6" data-path="extending-learners.html"><a href="extending-learners.html#learner-faq"><i class="fa fa-check"></i><b>6.1.6</b> Learner FAQ</a></li>
+</ul></li>
+<li class="chapter" data-level="6.2" data-path="extending-measures.html"><a href="extending-measures.html"><i class="fa fa-check"></i><b>6.2</b> Adding new Measures</a></li>
+<li class="chapter" data-level="6.3" data-path="extending-pipeops.html"><a href="extending-pipeops.html"><i class="fa fa-check"></i><b>6.3</b> Adding new PipeOps</a><ul>
+<li class="chapter" data-level="6.3.1" data-path="extending-pipeops.html"><a href="extending-pipeops.html#ext-pipeopcopy"><i class="fa fa-check"></i><b>6.3.1</b> General Case Example: <code>PipeOpCopy</code></a><ul>
+<li class="chapter" data-level="6.3.1.1" data-path="extending-pipeops.html"><a href="extending-pipeops.html#first-steps-inheriting-from-pipeop"><i class="fa fa-check"></i><b>6.3.1.1</b> First Steps: Inheriting from <code>PipeOp</code></a></li>
+<li class="chapter" data-level="6.3.1.2" data-path="extending-pipeops.html"><a href="extending-pipeops.html#channel-definitions"><i class="fa fa-check"></i><b>6.3.1.2</b> Channel Definitions</a></li>
+<li class="chapter" data-level="6.3.1.3" data-path="extending-learners.html"><a href="extending-learners.html#train-and-predict"><i class="fa fa-check"></i><b>6.3.1.3</b> Train and Predict</a></li>
+<li class="chapter" data-level="6.3.1.4" data-path="extending-pipeops.html"><a href="extending-pipeops.html#putting-it-together"><i class="fa fa-check"></i><b>6.3.1.4</b> Putting it Together</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3.2" data-path="extending-pipeops.html"><a href="extending-pipeops.html#ext-pipe-preproc"><i class="fa fa-check"></i><b>6.3.2</b> Special Case: Preprocessing</a><ul>
+<li class="chapter" data-level="6.3.2.1" data-path="extending-pipeops.html"><a href="extending-pipeops.html#example-pipeopdropna"><i class="fa fa-check"></i><b>6.3.2.1</b> Example: <code>PipeOpDropNA</code></a></li>
+<li class="chapter" data-level="6.3.2.2" data-path="extending-pipeops.html"><a href="extending-pipeops.html#example-pipeopscalealways"><i class="fa fa-check"></i><b>6.3.2.2</b> Example: <code>PipeOpScaleAlways</code></a></li>
+</ul></li>
+<li class="chapter" data-level="6.3.3" data-path="extending-pipeops.html"><a href="extending-pipeops.html#special-case-preprocessing-with-simple-train"><i class="fa fa-check"></i><b>6.3.3</b> Special Case: Preprocessing with Simple Train</a><ul>
+<li class="chapter" data-level="6.3.3.1" data-path="extending-pipeops.html"><a href="extending-pipeops.html#example-pipeopdropconst"><i class="fa fa-check"></i><b>6.3.3.1</b> Example: <code>PipeOpDropConst</code></a></li>
+<li class="chapter" data-level="6.3.3.2" data-path="extending-pipeops.html"><a href="extending-pipeops.html#example-pipeopscalealwayssimple"><i class="fa fa-check"></i><b>6.3.3.2</b> Example: <code>PipeOpScaleAlwaysSimple</code></a></li>
+</ul></li>
+<li class="chapter" data-level="6.3.4" data-path="extending-pipeops.html"><a href="extending-pipeops.html#ext-pipe-hyperpars"><i class="fa fa-check"></i><b>6.3.4</b> Hyperparameters</a><ul>
+<li class="chapter" data-level="6.3.4.1" data-path="extending-pipeops.html"><a href="extending-pipeops.html#hyperparameter-example-pipeopscale"><i class="fa fa-check"></i><b>6.3.4.1</b> Hyperparameter Example: <code>PipeOpScale</code></a></li>
+</ul></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="special-tasks.html"><a href="special-tasks.html"><i class="fa fa-check"></i><b>7</b> Special Tasks</a><ul>
+<li class="chapter" data-level="7.1" data-path="survival.html"><a href="survival.html"><i class="fa fa-check"></i><b>7.1</b> Survival Analysis</a><ul>
+<li class="chapter" data-level="7.1.1" data-path="survival.html"><a href="survival.html#tasksurv"><i class="fa fa-check"></i><b>7.1.1</b> TaskSurv</a></li>
+<li class="chapter" data-level="7.1.2" data-path="survival.html"><a href="survival.html#predict-types---crank-lp-and-distr"><i class="fa fa-check"></i><b>7.1.2</b> Predict Types - crank, lp, and distr</a></li>
+<li class="chapter" data-level="7.1.3" data-path="survival.html"><a href="survival.html#composition"><i class="fa fa-check"></i><b>7.1.3</b> Composition</a></li>
+<li class="chapter" data-level="7.1.4" data-path="survival.html"><a href="survival.html#benchmark-experiment"><i class="fa fa-check"></i><b>7.1.4</b> Benchmark Experiment</a></li>
+</ul></li>
+<li class="chapter" data-level="7.2" data-path="spatial.html"><a href="spatial.html"><i class="fa fa-check"></i><b>7.2</b> Spatial Analysis</a></li>
+<li class="chapter" data-level="7.3" data-path="ordinal.html"><a href="ordinal.html"><i class="fa fa-check"></i><b>7.3</b> Ordinal Analysis</a></li>
+<li class="chapter" data-level="7.4" data-path="functional.html"><a href="functional.html"><i class="fa fa-check"></i><b>7.4</b> Functional Analysis</a><ul>
+<li class="chapter" data-level="7.4.1" data-path="functional.html"><a href="functional.html#how-to-model-functional-data"><i class="fa fa-check"></i><b>7.4.1</b> How to model functional data?</a></li>
+</ul></li>
+<li class="chapter" data-level="7.5" data-path="multilabel.html"><a href="multilabel.html"><i class="fa fa-check"></i><b>7.5</b> Multilabel Classification</a></li>
+<li class="chapter" data-level="7.6" data-path="cost-sens.html"><a href="cost-sens.html"><i class="fa fa-check"></i><b>7.6</b> Cost-Sensitive Classification</a><ul>
+<li class="chapter" data-level="7.6.1" data-path="cost-sens.html"><a href="cost-sens.html#a-first-model"><i class="fa fa-check"></i><b>7.6.1</b> A First Model</a></li>
+<li class="chapter" data-level="7.6.2" data-path="cost-sens.html"><a href="cost-sens.html#cost-sensitive-measure"><i class="fa fa-check"></i><b>7.6.2</b> Cost-sensitive Measure</a></li>
+<li class="chapter" data-level="7.6.3" data-path="cost-sens.html"><a href="cost-sens.html#thresholding"><i class="fa fa-check"></i><b>7.6.3</b> Thresholding</a></li>
+<li class="chapter" data-level="7.6.4" data-path="binary-classification.html"><a href="binary-classification.html#threshold-tuning"><i class="fa fa-check"></i><b>7.6.4</b> Threshold Tuning</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="interpretation.html"><a href="interpretation.html"><i class="fa fa-check"></i><b>8</b> Model Interpretation</a><ul>
+<li class="chapter" data-level="8.1" data-path="iml.html"><a href="iml.html"><i class="fa fa-check"></i><b>8.1</b> IML</a></li>
+<li class="chapter" data-level="8.2" data-path="interpretability-dalex.html"><a href="interpretability-dalex.html"><i class="fa fa-check"></i><b>8.2</b> DALEX</a><ul>
+<li class="chapter" data-level="8.2.1" data-path="interpretability-dalex.html"><a href="interpretability-dalex.html#interpretability-dalex-introduction"><i class="fa fa-check"></i><b>8.2.1</b> Introduction</a></li>
+<li class="chapter" data-level="8.2.2" data-path="interpretability-dalex.html"><a href="interpretability-dalex.html#interpretability-data-fifa"><i class="fa fa-check"></i><b>8.2.2</b> Read data: FIFA</a></li>
+<li class="chapter" data-level="8.2.3" data-path="interpretability-dalex.html"><a href="interpretability-dalex.html#interpretability-train-ranger"><i class="fa fa-check"></i><b>8.2.3</b> Train a model: Ranger</a></li>
+<li class="chapter" data-level="8.2.4" data-path="interpretability-dalex.html"><a href="interpretability-dalex.html#interpretability-architecture"><i class="fa fa-check"></i><b>8.2.4</b> The general workflow</a></li>
+<li class="chapter" data-level="8.2.5" data-path="interpretability-dalex.html"><a href="interpretability-dalex.html#interpretability-dataset-level"><i class="fa fa-check"></i><b>8.2.5</b> Dataset level exploration</a></li>
+<li class="chapter" data-level="8.2.6" data-path="interpretability-dalex.html"><a href="interpretability-dalex.html#interpretability-instance-level"><i class="fa fa-check"></i><b>8.2.6</b> Instance level explanation</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="appendix.html"><a href="appendix.html"><i class="fa fa-check"></i><b>9</b> Appendix</a><ul>
+<li class="chapter" data-level="9.1" data-path="list-learners.html"><a href="list-learners.html"><i class="fa fa-check"></i><b>9.1</b> Integrated Learners</a></li>
+<li class="chapter" data-level="9.2" data-path="list-measures.html"><a href="list-measures.html"><i class="fa fa-check"></i><b>9.2</b> Integrated Performance Measures</a></li>
+<li class="chapter" data-level="9.3" data-path="list-filters.html"><a href="list-filters.html"><i class="fa fa-check"></i><b>9.3</b> Integrated Filter Methods</a><ul>
+<li class="chapter" data-level="9.3.1" data-path="list-filters.html"><a href="list-filters.html#fs-filter-list"><i class="fa fa-check"></i><b>9.3.1</b> Standalone filter methods</a></li>
+<li class="chapter" data-level="9.3.2" data-path="list-filters.html"><a href="list-filters.html#fs-filter-embedded-list"><i class="fa fa-check"></i><b>9.3.2</b> Learners With Embedded Filter Methods</a></li>
+</ul></li>
+<li class="chapter" data-level="9.4" data-path="list-pipeops.html"><a href="list-pipeops.html"><i class="fa fa-check"></i><b>9.4</b> Integrated Pipe Operators</a></li>
+<li class="chapter" data-level="9.5" data-path="compare-frameworks.html"><a href="compare-frameworks.html"><i class="fa fa-check"></i><b>9.5</b> Framework Comparison</a><ul>
+<li class="chapter" data-level="9.5.1" data-path="compare-frameworks.html"><a href="compare-frameworks.html#an-introduction-to-pipeops"><i class="fa fa-check"></i><b>9.5.1</b> An introduction to “PipeOp”s</a><ul>
+<li class="chapter" data-level="9.5.1.1" data-path="compare-frameworks.html"><a href="compare-frameworks.html#a-quick-glance-into-a-pipeop"><i class="fa fa-check"></i><b>9.5.1.1</b> A quick glance into a PipeOp</a></li>
+<li class="chapter" data-level="9.5.1.2" data-path="compare-frameworks.html"><a href="compare-frameworks.html#constructing-the-pipeline"><i class="fa fa-check"></i><b>9.5.1.2</b> Constructing the Pipeline</a></li>
+</ul></li>
+<li class="chapter" data-level="9.5.2" data-path="compare-frameworks.html"><a href="compare-frameworks.html#mlr3pipelines-vs.-mlr"><i class="fa fa-check"></i><b>9.5.2</b> mlr3pipelines vs. mlr</a><ul>
+<li class="chapter" data-level="9.5.2.1" data-path="compare-frameworks.html"><a href="compare-frameworks.html#mlr"><i class="fa fa-check"></i><b>9.5.2.1</b> mlr</a></li>
+<li class="chapter" data-level="9.5.2.2" data-path="compare-frameworks.html"><a href="compare-frameworks.html#mlr3pipelines"><i class="fa fa-check"></i><b>9.5.2.2</b> mlr3pipelines</a></li>
+</ul></li>
+<li class="chapter" data-level="9.5.3" data-path="compare-frameworks.html"><a href="compare-frameworks.html#mlr3pipelines-vs.-sklearn.pipeline.pipeline"><i class="fa fa-check"></i><b>9.5.3</b> mlr3pipelines vs. sklearn.pipeline.Pipeline</a><ul>
+<li class="chapter" data-level="9.5.3.1" data-path="compare-frameworks.html"><a href="compare-frameworks.html#sklearn"><i class="fa fa-check"></i><b>9.5.3.1</b> sklearn</a></li>
+<li class="chapter" data-level="9.5.3.2" data-path="compare-frameworks.html"><a href="compare-frameworks.html#mlr3pipelines-1"><i class="fa fa-check"></i><b>9.5.3.2</b> mlr3pipelines</a></li>
+</ul></li>
+<li class="chapter" data-level="9.5.4" data-path="compare-frameworks.html"><a href="compare-frameworks.html#mlr3pipelines-vs-recipes"><i class="fa fa-check"></i><b>9.5.4</b> mlr3pipelines vs recipes</a><ul>
+<li class="chapter" data-level="9.5.4.1" data-path="compare-frameworks.html"><a href="compare-frameworks.html#recipes"><i class="fa fa-check"></i><b>9.5.4.1</b> recipes</a></li>
+<li class="chapter" data-level="9.5.4.2" data-path="compare-frameworks.html"><a href="compare-frameworks.html#mlr3pipelines-2"><i class="fa fa-check"></i><b>9.5.4.2</b> mlr3pipelines</a></li>
+</ul></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">mlr3 book</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="fs" class="section level2">
+<h2><span class="header-section-number">3.2</span> Feature Selection / Filtering</h2>
+<p>Often, data sets include a large number of features.
+The technique of extracting a subset of relevant features is called “feature selection”.</p>
+<p>The objective of feature selection is to fit the sparse dependent of a model on a subset of available data features in the most suitable manner.
+Feature selection can enhance the interpretability of the model, speed up the learning process and improve the learner performance.
+Different approaches exist to identify the relevant features.
+Two different approaches are emphasized in the literature:
+one is called <a href="#fs-filtering">Filtering</a> and the other approach is often referred to as feature subset selection or <a href="fs.html#fs-wrapper">wrapper methods</a>.</p>
+<p>What are the differences <span class="citation">(Chandrashekar and Sahin <a href="#ref-chandrashekar2014" role="doc-biblioref">2014</a>)</span>?</p>
+<ul>
+<li><strong>Filtering</strong>: An external algorithm computes a rank of the variables (e.g. based on the correlation to the response).
+Then, features are subsetted by a certain criteria, e.g. an absolute number or a percentage of the number of variables.
+The selected features will then be used to fit a model (with optional hyperparameters selected by tuning).
+This calculation is usually cheaper than “feature subset selection” in terms of computation time.</li>
+<li><strong>Wrapper Methods</strong>: Here, no ranking of features is done.
+Features are selected by a (random) subset of the data.
+Then, we fit a model and subsequently assess the performance.
+This is done for a lot of feature combinations in a cross-validation (CV) setting and the best combination is reported.
+This method is very computationally intensive as a lot of models are fitted.
+Also, strictly speaking all these models would need to be tuned before the performance is estimated.
+This would require an additional nested level in a CV setting.
+After undertaken all of these steps, the selected subset of features is again fitted (with optional hyperparameters selected by tuning).</li>
+</ul>
+<p>There is also a third approach which can be attributed to the “filter” family:
+The embedded feature-selection methods of some <a href="https://mlr3.mlr-org.com/reference/Learner.html"><code>Learner</code></a>.
+Read more about how to use these in section <a href="#fs-embedded">embedded feature-selection methods</a>.</p>
+<p><a href="fs.html#fs-ensemble">Ensemble filters</a> built upon the idea of stacking single filter methods.
+These are not yet implemented.</p>
+<p>All functionality that is related to feature selection is implemented via the extension package <a href="https://mlr3filters.mlr-org.com">mlr3filters</a>.</p>
+<div id="fs-filter" class="section level3">
+<h3><span class="header-section-number">3.2.1</span> Filters</h3>
+<p>Filter methods assign an importance value to each feature.
+Based on these values the features can be ranked.
+Thereafter, we are able to select a feature subset.
+There is a list of all implemented filter methods in the <a href="list-filters.html#list-filters">Appendix</a>.</p>
+</div>
+<div id="fs-calc" class="section level3">
+<h3><span class="header-section-number">3.2.2</span> Calculating filter values</h3>
+<p>Currently, only classification and regression tasks are supported.</p>
+<p>The first step it to create a new R object using the class of the desired filter method.
+Each object of class <code>Filter</code> has a <code>.$calculate()</code> method which computes the filter values and ranks them in a descending order.</p>
+<div class="sourceCode" id="cb204"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb204-1"><a href="fs.html#cb204-1"></a><span class="kw">library</span>(<span class="st">&quot;mlr3filters&quot;</span>)</span>
+<span id="cb204-2"><a href="fs.html#cb204-2"></a>filter =<span class="st"> </span>FilterJMIM<span class="op">$</span><span class="kw">new</span>()</span>
+<span id="cb204-3"><a href="fs.html#cb204-3"></a></span>
+<span id="cb204-4"><a href="fs.html#cb204-4"></a>task =<span class="st"> </span><span class="kw">tsk</span>(<span class="st">&quot;iris&quot;</span>)</span>
+<span id="cb204-5"><a href="fs.html#cb204-5"></a>filter<span class="op">$</span><span class="kw">calculate</span>(task)</span>
+<span id="cb204-6"><a href="fs.html#cb204-6"></a></span>
+<span id="cb204-7"><a href="fs.html#cb204-7"></a><span class="kw">as.data.table</span>(filter)</span></code></pre></div>
+<pre><code>##         feature  score
+## 1: Sepal.Length 1.0401
+## 2:  Petal.Width 0.9894
+## 3: Petal.Length 0.9881
+## 4:  Sepal.Width 0.8314</code></pre>
+<p>Some filters support changing specific hyperparameters.
+This is similar to setting hyperparameters of a <a href="https://mlr3.mlr-org.com/reference/Learner.html"><code>Learner</code></a> using <code>.$param_set$values</code>:</p>
+<div class="sourceCode" id="cb206"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb206-1"><a href="fs.html#cb206-1"></a>filter_cor =<span class="st"> </span>FilterCorrelation<span class="op">$</span><span class="kw">new</span>()</span>
+<span id="cb206-2"><a href="fs.html#cb206-2"></a>filter_cor<span class="op">$</span>param_set</span></code></pre></div>
+<pre><code>## &lt;ParamSet&gt;
+##        id    class lower upper
+## 1:    use ParamFct    NA    NA
+## 2: method ParamFct    NA    NA
+##                                                                  levels
+## 1: everything,all.obs,complete.obs,na.or.complete,pairwise.complete.obs
+## 2:                                             pearson,kendall,spearman
+##       default value
+## 1: everything      
+## 2:    pearson</code></pre>
+<div class="sourceCode" id="cb208"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb208-1"><a href="fs.html#cb208-1"></a><span class="co"># change parameter &#39;method&#39;</span></span>
+<span id="cb208-2"><a href="fs.html#cb208-2"></a>filter_cor<span class="op">$</span>param_set<span class="op">$</span>values =<span class="st"> </span><span class="kw">list</span>(<span class="dt">method =</span> <span class="st">&quot;spearman&quot;</span>)</span>
+<span id="cb208-3"><a href="fs.html#cb208-3"></a>filter_cor<span class="op">$</span>param_set</span></code></pre></div>
+<pre><code>## &lt;ParamSet&gt;
+##        id    class lower upper
+## 1:    use ParamFct    NA    NA
+## 2: method ParamFct    NA    NA
+##                                                                  levels
+## 1: everything,all.obs,complete.obs,na.or.complete,pairwise.complete.obs
+## 2:                                             pearson,kendall,spearman
+##       default    value
+## 1: everything         
+## 2:    pearson spearman</code></pre>
+<p>Rather than taking the “long” R6 way to create a filter, there is also a built-in shorthand notation for filter creation:</p>
+<div class="sourceCode" id="cb210"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb210-1"><a href="fs.html#cb210-1"></a>filter =<span class="st"> </span><span class="kw">flt</span>(<span class="st">&quot;cmim&quot;</span>)</span>
+<span id="cb210-2"><a href="fs.html#cb210-2"></a>filter</span></code></pre></div>
+<pre><code>## &lt;FilterCMIM:cmim&gt;
+## Task Types: classif, regr
+## Task Properties: -
+## Packages: praznik
+## Feature types: integer, numeric, factor, ordered</code></pre>
+</div>
+<div id="fs-var-imp-filters" class="section level3">
+<h3><span class="header-section-number">3.2.3</span> Variable Importance Filters</h3>
+<p>All <a href="https://mlr3.mlr-org.com/reference/Learner.html"><code>Learner</code></a> with the property “importance” come with integrated feature selection methods.</p>
+<p>You can find a list of all learners with this property in the <a href="list-filters.html#fs-filter-embedded-list">Appendix</a>.</p>
+<p>For some learners the desired filter method needs to be set during learner creation.
+For example, learner <code>classif.ranger</code> (in the package <a href="https://mlr3learners.mlr-org.com">mlr3learners</a>) comes with multiple integrated methods.
+See the help page of <a href="https://www.rdocumentation.org/packages/ranger/topics/ranger"><code>ranger::ranger</code></a>.
+To use method “impurity”, you need to set the filter method during construction.</p>
+<div class="sourceCode" id="cb212"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb212-1"><a href="fs.html#cb212-1"></a><span class="kw">library</span>(<span class="st">&quot;mlr3learners&quot;</span>)</span>
+<span id="cb212-2"><a href="fs.html#cb212-2"></a>lrn =<span class="st"> </span><span class="kw">lrn</span>(<span class="st">&quot;classif.ranger&quot;</span>, <span class="dt">importance =</span> <span class="st">&quot;impurity&quot;</span>)</span></code></pre></div>
+<p>Now you can use the <a href="https://mlr3filters.mlr-org.com/reference/FilterImportance.html"><code>mlr3filters::FilterImportance</code></a> class for algorithm-embedded methods to filter a <a href="https://mlr3.mlr-org.com/reference/Task.html"><code>Task</code></a>.</p>
+<div class="sourceCode" id="cb213"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb213-1"><a href="fs.html#cb213-1"></a><span class="kw">library</span>(<span class="st">&quot;mlr3learners&quot;</span>)</span>
+<span id="cb213-2"><a href="fs.html#cb213-2"></a></span>
+<span id="cb213-3"><a href="fs.html#cb213-3"></a>task =<span class="st"> </span><span class="kw">tsk</span>(<span class="st">&quot;iris&quot;</span>)</span>
+<span id="cb213-4"><a href="fs.html#cb213-4"></a>filter =<span class="st"> </span><span class="kw">flt</span>(<span class="st">&quot;importance&quot;</span>, <span class="dt">learner =</span> lrn)</span>
+<span id="cb213-5"><a href="fs.html#cb213-5"></a>filter<span class="op">$</span><span class="kw">calculate</span>(task)</span>
+<span id="cb213-6"><a href="fs.html#cb213-6"></a><span class="kw">head</span>(<span class="kw">as.data.table</span>(filter), <span class="dv">3</span>)</span></code></pre></div>
+<pre><code>##         feature  score
+## 1:  Petal.Width 46.886
+## 2: Petal.Length 41.377
+## 3: Sepal.Length  8.839</code></pre>
+</div>
+<div id="fs-ensemble" class="section level3">
+<h3><span class="header-section-number">3.2.4</span> Ensemble Methods</h3>
+<p>Work in progress.</p>
+</div>
+<div id="fs-wrapper" class="section level3">
+<h3><span class="header-section-number">3.2.5</span> Wrapper Methods</h3>
+<p>Wrapper feature selection is supported via the <a href="https://mlr3fselect.mlr-org.com">mlr3fselect</a> extension package.
+At the heart of <a href="https://mlr3fselect.mlr-org.com">mlr3fselect</a> are the R6 classes:</p>
+<ul>
+<li><a href="https://mlr3fselect.mlr-org.com/reference/FSelectInstanceSingleCrit.html"><code>FSelectInstanceSingleCrit</code></a>, <a href="https://mlr3fselect.mlr-org.com/reference/FSelectInstanceMultiCrit.html"><code>FSelectInstanceMultiCrit</code></a>: These two classes describe the feature selection problem and store the results.</li>
+<li><a href="https://mlr3fselect.mlr-org.com/reference/FSelector.html"><code>FSelector</code></a>: This class is the base class for implementations of feature selection algorithms.</li>
+</ul>
+</div>
+<div id="fs-wrapper-optimization" class="section level3">
+<h3><span class="header-section-number">3.2.6</span> The <code>FSelectInstance</code> Classes</h3>
+<p>The following sub-section examines the feature selection on the <a href="https://mlr3.mlr-org.com/reference/mlr_tasks_sonar.html"><code>Pima</code></a> data set which is used to predict whether or not a patient has diabetes.</p>
+<div class="sourceCode" id="cb215"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb215-1"><a href="fs.html#cb215-1"></a>task =<span class="st"> </span><span class="kw">tsk</span>(<span class="st">&quot;pima&quot;</span>)</span>
+<span id="cb215-2"><a href="fs.html#cb215-2"></a><span class="kw">print</span>(task)</span></code></pre></div>
+<pre><code>## &lt;TaskClassif:pima&gt; (768 x 9)
+## * Target: diabetes
+## * Properties: twoclass
+## * Features (8):
+##   - dbl (8): age, glucose, insulin, mass, pedigree, pregnant, pressure,
+##     triceps</code></pre>
+<p>We use the classification tree from <a href="https://cran.r-project.org/package=rpart">rpart</a>.</p>
+<div class="sourceCode" id="cb217"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb217-1"><a href="fs.html#cb217-1"></a>learner =<span class="st"> </span><span class="kw">lrn</span>(<span class="st">&quot;classif.rpart&quot;</span>)</span></code></pre></div>
+<p>Next, we need to specify how to evaluate the performance of the feature subsets.
+For this, we need to choose a <a href="https://mlr3.mlr-org.com/reference/Resampling.html"><code>resampling strategy</code></a> and a <a href="https://mlr3.mlr-org.com/reference/Measure.html"><code>performance measure</code></a>.</p>
+<div class="sourceCode" id="cb218"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb218-1"><a href="fs.html#cb218-1"></a>hout =<span class="st"> </span><span class="kw">rsmp</span>(<span class="st">&quot;holdout&quot;</span>)</span>
+<span id="cb218-2"><a href="fs.html#cb218-2"></a>measure =<span class="st"> </span><span class="kw">msr</span>(<span class="st">&quot;classif.ce&quot;</span>)</span></code></pre></div>
+<p>Finally, one has to choose the available budget for the feature selection.
+This is done by selecting one of the available <a href="https://bbotk.mlr-org.com/reference/Terminator.html"><code>Terminators</code></a>:</p>
+<ul>
+<li>Terminate after a given time (<a href="https://bbotk.mlr-org.com/reference/mlr_terminators_clock_time.html"><code>TerminatorClockTime</code></a>)</li>
+<li>Terminate after a given amount of iterations (<a href="https://bbotk.mlr-org.com/reference/mlr_terminators_evals.html"><code>TerminatorEvals</code></a>)</li>
+<li>Terminate after a specific performance is reached (<a href="https://bbotk.mlr-org.com/reference/mlr_terminators_perf_reached.html"><code>TerminatorPerfReached</code></a>)</li>
+<li>Terminate when feature selection does not improve (<a href="https://bbotk.mlr-org.com/reference/mlr_terminators_stagnation.html"><code>TerminatorStagnation</code></a>)</li>
+<li>A combination of the above in an <em>ALL</em> or <em>ANY</em> fashion (<a href="https://bbotk.mlr-org.com/reference/mlr_terminators_combo.html"><code>TerminatorCombo</code></a>)</li>
+</ul>
+<p>For this short introduction, we specify a budget of 20 evaluations and then put everything together into a <a href="https://mlr3fselect.mlr-org.com/reference/FSelectInstanceSingleCrit.html"><code>FSelectInstanceSingleCrit</code></a>:</p>
+<div class="sourceCode" id="cb219"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb219-1"><a href="fs.html#cb219-1"></a><span class="kw">library</span>(<span class="st">&quot;mlr3fselect&quot;</span>)</span>
+<span id="cb219-2"><a href="fs.html#cb219-2"></a></span>
+<span id="cb219-3"><a href="fs.html#cb219-3"></a>evals20 =<span class="st"> </span><span class="kw">trm</span>(<span class="st">&quot;evals&quot;</span>, <span class="dt">n_evals =</span> <span class="dv">20</span>)</span>
+<span id="cb219-4"><a href="fs.html#cb219-4"></a></span>
+<span id="cb219-5"><a href="fs.html#cb219-5"></a>instance =<span class="st"> </span>FSelectInstanceSingleCrit<span class="op">$</span><span class="kw">new</span>(</span>
+<span id="cb219-6"><a href="fs.html#cb219-6"></a>  <span class="dt">task =</span> task,</span>
+<span id="cb219-7"><a href="fs.html#cb219-7"></a>  <span class="dt">learner =</span> learner,</span>
+<span id="cb219-8"><a href="fs.html#cb219-8"></a>  <span class="dt">resampling =</span> hout,</span>
+<span id="cb219-9"><a href="fs.html#cb219-9"></a>  <span class="dt">measure =</span> measure,</span>
+<span id="cb219-10"><a href="fs.html#cb219-10"></a>  <span class="dt">terminator =</span> evals20</span>
+<span id="cb219-11"><a href="fs.html#cb219-11"></a>)</span>
+<span id="cb219-12"><a href="fs.html#cb219-12"></a>instance</span></code></pre></div>
+<pre><code>## &lt;FSelectInstanceSingleCrit&gt;
+## * State:  Not optimized
+## * Objective: &lt;ObjectiveFSelect:classif.rpart_on_pima&gt;
+## * Search Space:
+## &lt;ParamSet&gt;
+##          id    class lower upper      levels        default value
+## 1:      age ParamLgl    NA    NA  TRUE,FALSE &lt;NoDefault[3]&gt;      
+## 2:  glucose ParamLgl    NA    NA  TRUE,FALSE &lt;NoDefault[3]&gt;      
+## 3:  insulin ParamLgl    NA    NA  TRUE,FALSE &lt;NoDefault[3]&gt;      
+## 4:     mass ParamLgl    NA    NA  TRUE,FALSE &lt;NoDefault[3]&gt;      
+## 5: pedigree ParamLgl    NA    NA  TRUE,FALSE &lt;NoDefault[3]&gt;      
+## 6: pregnant ParamLgl    NA    NA  TRUE,FALSE &lt;NoDefault[3]&gt;      
+## 7: pressure ParamLgl    NA    NA  TRUE,FALSE &lt;NoDefault[3]&gt;      
+## 8:  triceps ParamLgl    NA    NA  TRUE,FALSE &lt;NoDefault[3]&gt;      
+## * Terminator: &lt;TerminatorEvals&gt;
+## * Terminated: FALSE
+## * Archive:
+## &lt;ArchiveFSelect&gt;
+## Null data.table (0 rows and 0 cols)</code></pre>
+<p>To start the feature selection, we still need to select an algorithm which are defined via the <a href="https://mlr3fselect.mlr-org.com/reference/FSelector.html"><code>FSelector</code></a> class</p>
+</div>
+<div id="the-fselector-class" class="section level3">
+<h3><span class="header-section-number">3.2.7</span> The <code>FSelector</code> Class</h3>
+<p>The following algorithms are currently implemented in <a href="https://mlr3fselect.mlr-org.com">mlr3fselect</a>:</p>
+<ul>
+<li>Random Search (<a href="https://mlr3fselect.mlr-org.com/reference/FSelectorRandomSearch.html"><code>FSelectorRandomSearch</code></a>)</li>
+<li>Exhaustive Search (<a href="https://mlr3fselect.mlr-org.com/reference/FSelectorExhaustiveSearch.html"><code>FSelectorExhaustiveSearch</code></a>)</li>
+<li>Sequential Search (<a href="https://mlr3fselect.mlr-org.com/reference/FSelectorSequential.html"><code>FSelectorSequential</code></a>)</li>
+<li>Recursive Feature Elimination (<a href="https://mlr3fselect.mlr-org.com/reference/FSelectorRFE.html"><code>FSelectorRFE</code></a>)</li>
+<li>Design Points (<a href="https://mlr3fselect.mlr-org.com/reference/FSelectorDesignPoints.html"><code>FSelectorDesignPoints</code></a>)</li>
+</ul>
+<p>In this example, we will use a simple random search.</p>
+<div class="sourceCode" id="cb221"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb221-1"><a href="fs.html#cb221-1"></a>fselector =<span class="st"> </span><span class="kw">fs</span>(<span class="st">&quot;random_search&quot;</span>)</span></code></pre></div>
+</div>
+<div id="wrapper-selection-triggering" class="section level3">
+<h3><span class="header-section-number">3.2.8</span> Triggering the Tuning</h3>
+<p>To start the feature selection, we simply pass the <a href="https://mlr3fselect.mlr-org.com/reference/FSelectInstanceSingleCrit.html"><code>FSelectInstanceSingleCrit</code></a> to the <code>$optimize()</code> method of the initialized <a href="https://mlr3fselect.mlr-org.com/reference/FSelector.html"><code>FSelector</code></a>. The algorithm proceeds as follows</p>
+<ol style="list-style-type: decimal">
+<li>The <a href="https://mlr3fselect.mlr-org.com/reference/FSelector.html"><code>FSelector</code></a> proposes at least one feature subset and may propose multiple subsets to improve parallelization, which can be controlled via the setting <code>batch_size</code>).</li>
+<li>For each feature subset, the given <a href="https://mlr3.mlr-org.com/reference/Learner.html"><code>Learner</code></a> is fitted on the <a href="https://mlr3.mlr-org.com/reference/Task.html"><code>Task</code></a> using the provided <a href="https://mlr3.mlr-org.com/reference/Resampling.html"><code>Resampling</code></a>.
+All evaluations are stored in the archive of the <a href="https://mlr3fselect.mlr-org.com/reference/FSelectInstanceSingleCrit.html"><code>FSelectInstanceSingleCrit</code></a>.</li>
+<li>The <a href="https://bbotk.mlr-org.com/reference/Terminator.html"><code>Terminator</code></a> is queried if the budget is exhausted.
+If the budget is not exhausted, restart with 1) until it is.</li>
+<li>Determine the feature subset with the best observed performance.</li>
+<li>Store the best feature subset as the result in the instance object.
+The best featue subset (<code>$result_feature_set</code>) and the corresponding measured performance (<code>$result_y</code>) can be accessed from the instance.</li>
+</ol>
+<div class="sourceCode" id="cb222"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb222-1"><a href="fs.html#cb222-1"></a>fselector<span class="op">$</span><span class="kw">optimize</span>(instance)</span></code></pre></div>
+<pre><code>## INFO  [06:58:17.680] Starting to optimize 8 parameter(s) with &#39;&lt;FSelectorRandomSearch&gt;&#39; and &#39;&lt;TerminatorEvals&gt;&#39; 
+## INFO  [06:58:17.891] Evaluating 10 configuration(s) 
+## INFO  [06:58:18.543] Result of batch 1: 
+## INFO  [06:58:18.546]    age glucose insulin  mass pedigree pregnant pressure triceps classif.ce 
+## INFO  [06:58:18.546]  FALSE    TRUE    TRUE  TRUE    FALSE     TRUE     TRUE    TRUE     0.2461 
+## INFO  [06:58:18.546]  FALSE    TRUE    TRUE FALSE    FALSE    FALSE    FALSE    TRUE     0.2500 
+## INFO  [06:58:18.546]  FALSE   FALSE    TRUE  TRUE    FALSE    FALSE    FALSE   FALSE     0.3477 
+## INFO  [06:58:18.546]  FALSE    TRUE    TRUE FALSE     TRUE     TRUE     TRUE    TRUE     0.2695 
+## INFO  [06:58:18.546]   TRUE    TRUE    TRUE  TRUE     TRUE     TRUE     TRUE    TRUE     0.2969 
+## INFO  [06:58:18.546]  FALSE   FALSE    TRUE FALSE     TRUE     TRUE    FALSE    TRUE     0.3398 
+## INFO  [06:58:18.546]   TRUE    TRUE    TRUE  TRUE     TRUE     TRUE     TRUE    TRUE     0.2969 
+## INFO  [06:58:18.546]   TRUE    TRUE    TRUE  TRUE    FALSE     TRUE     TRUE    TRUE     0.2891 
+## INFO  [06:58:18.546]   TRUE   FALSE    TRUE  TRUE     TRUE     TRUE     TRUE    TRUE     0.3203 
+## INFO  [06:58:18.546]   TRUE    TRUE    TRUE  TRUE     TRUE     TRUE     TRUE    TRUE     0.2969 
+## INFO  [06:58:18.546]                                 uhash 
+## INFO  [06:58:18.546]  c1e2b282-a9ce-45a4-b5e4-846ab5cc91fd 
+## INFO  [06:58:18.546]  542cc598-f3af-4c5a-a119-b6e1326d342a 
+## INFO  [06:58:18.546]  d232f004-34e2-4c2a-9601-f69df4419ae6 
+## INFO  [06:58:18.546]  e5f4aee3-665c-47a7-8222-2d5cf3092494 
+## INFO  [06:58:18.546]  1c0fc2bf-5466-45f1-84b0-cbe8b63edd6d 
+## INFO  [06:58:18.546]  3841c5f4-26d2-46b9-ad9e-a9f969674142 
+## INFO  [06:58:18.546]  260d7d28-9562-440c-b4df-5c5e07c76880 
+## INFO  [06:58:18.546]  307e8d5a-24c0-4086-9148-694701bc30a2 
+## INFO  [06:58:18.546]  002ddadc-976b-4cd9-9be3-29cd94c15651 
+## INFO  [06:58:18.546]  e74270e2-b20c-48e6-aeeb-813c5a0700ec 
+## INFO  [06:58:18.550] Evaluating 10 configuration(s) 
+## INFO  [06:58:19.031] Result of batch 2: 
+## INFO  [06:58:19.034]    age glucose insulin  mass pedigree pregnant pressure triceps classif.ce 
+## INFO  [06:58:19.034]  FALSE    TRUE   FALSE FALSE     TRUE    FALSE    FALSE   FALSE     0.2578 
+## INFO  [06:58:19.034]   TRUE   FALSE   FALSE FALSE    FALSE    FALSE    FALSE    TRUE     0.3516 
+## INFO  [06:58:19.034]   TRUE    TRUE    TRUE  TRUE     TRUE     TRUE     TRUE    TRUE     0.2969 
+## INFO  [06:58:19.034]   TRUE    TRUE   FALSE  TRUE    FALSE     TRUE    FALSE    TRUE     0.2461 
+## INFO  [06:58:19.034]   TRUE   FALSE    TRUE  TRUE     TRUE    FALSE    FALSE    TRUE     0.3281 
+## INFO  [06:58:19.034]   TRUE    TRUE    TRUE FALSE     TRUE     TRUE     TRUE    TRUE     0.3086 
+## INFO  [06:58:19.034]  FALSE    TRUE    TRUE  TRUE     TRUE     TRUE    FALSE    TRUE     0.2695 
+## INFO  [06:58:19.034]   TRUE    TRUE    TRUE FALSE     TRUE     TRUE     TRUE    TRUE     0.3086 
+## INFO  [06:58:19.034]   TRUE   FALSE   FALSE  TRUE    FALSE    FALSE     TRUE   FALSE     0.3242 
+## INFO  [06:58:19.034]   TRUE   FALSE    TRUE FALSE    FALSE    FALSE    FALSE   FALSE     0.3633 
+## INFO  [06:58:19.034]                                 uhash 
+## INFO  [06:58:19.034]  2079eb40-8404-46b7-ae40-bfe12a7cd178 
+## INFO  [06:58:19.034]  e55b096d-58d8-49f3-b544-df3236d879b1 
+## INFO  [06:58:19.034]  fcf3592d-b87d-4ff9-88c4-a49613712571 
+## INFO  [06:58:19.034]  7c2c1c3c-025d-4d8b-999e-b6ce22c9151b 
+## INFO  [06:58:19.034]  81b7923c-381c-40df-9e10-996e2d05d840 
+## INFO  [06:58:19.034]  712052e0-eb94-42d6-b38b-ffd6046f2bce 
+## INFO  [06:58:19.034]  1219ba71-5d15-43bd-b76e-aaae3a990c9c 
+## INFO  [06:58:19.034]  6e578921-3cb0-44ed-8944-0d512ba004d6 
+## INFO  [06:58:19.034]  e2040ac4-b776-4e0d-a41f-c2eeeeb0e1d9 
+## INFO  [06:58:19.034]  74629076-4ac9-4c28-ae4c-19a8ddce6e30 
+## INFO  [06:58:19.041] Finished optimizing after 20 evaluation(s) 
+## INFO  [06:58:19.042] Result: 
+## INFO  [06:58:19.045]    age glucose insulin mass pedigree pregnant pressure triceps 
+## INFO  [06:58:19.045]  FALSE    TRUE    TRUE TRUE    FALSE     TRUE     TRUE    TRUE 
+## INFO  [06:58:19.045]                                        features  x_domain classif.ce 
+## INFO  [06:58:19.045]  glucose,insulin,mass,pregnant,pressure,triceps &lt;list[8]&gt;     0.2461</code></pre>
+<pre><code>##      age glucose insulin mass pedigree pregnant pressure triceps
+## 1: FALSE    TRUE    TRUE TRUE    FALSE     TRUE     TRUE    TRUE
+##                                          features  x_domain classif.ce
+## 1: glucose,insulin,mass,pregnant,pressure,triceps &lt;list[8]&gt;     0.2461</code></pre>
+<div class="sourceCode" id="cb225"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb225-1"><a href="fs.html#cb225-1"></a>instance<span class="op">$</span>result_feature_set</span></code></pre></div>
+<pre><code>## [1] &quot;glucose&quot;  &quot;insulin&quot;  &quot;mass&quot;     &quot;pregnant&quot; &quot;pressure&quot; &quot;triceps&quot;</code></pre>
+<div class="sourceCode" id="cb227"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb227-1"><a href="fs.html#cb227-1"></a>instance<span class="op">$</span>result_y</span></code></pre></div>
+<pre><code>## classif.ce 
+##     0.2461</code></pre>
+<p>One can investigate all resamplings which were undertaken, as they are stored in the archive of the <a href="https://mlr3fselect.mlr-org.com/reference/FSelectInstanceSingleCrit.html"><code>FSelectInstanceSingleCrit</code></a> and can be accessed through <code>$data()</code> method:</p>
+<div class="sourceCode" id="cb229"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb229-1"><a href="fs.html#cb229-1"></a>instance<span class="op">$</span>archive<span class="op">$</span><span class="kw">data</span>()</span></code></pre></div>
+<pre><code>##       age glucose insulin  mass pedigree pregnant pressure triceps classif.ce
+##  1: FALSE    TRUE    TRUE  TRUE    FALSE     TRUE     TRUE    TRUE     0.2461
+##  2: FALSE    TRUE    TRUE FALSE    FALSE    FALSE    FALSE    TRUE     0.2500
+##  3: FALSE   FALSE    TRUE  TRUE    FALSE    FALSE    FALSE   FALSE     0.3477
+##  4: FALSE    TRUE    TRUE FALSE     TRUE     TRUE     TRUE    TRUE     0.2695
+##  5:  TRUE    TRUE    TRUE  TRUE     TRUE     TRUE     TRUE    TRUE     0.2969
+##  6: FALSE   FALSE    TRUE FALSE     TRUE     TRUE    FALSE    TRUE     0.3398
+##  7:  TRUE    TRUE    TRUE  TRUE     TRUE     TRUE     TRUE    TRUE     0.2969
+##  8:  TRUE    TRUE    TRUE  TRUE    FALSE     TRUE     TRUE    TRUE     0.2891
+##  9:  TRUE   FALSE    TRUE  TRUE     TRUE     TRUE     TRUE    TRUE     0.3203
+## 10:  TRUE    TRUE    TRUE  TRUE     TRUE     TRUE     TRUE    TRUE     0.2969
+## 11: FALSE    TRUE   FALSE FALSE     TRUE    FALSE    FALSE   FALSE     0.2578
+## 12:  TRUE   FALSE   FALSE FALSE    FALSE    FALSE    FALSE    TRUE     0.3516
+## 13:  TRUE    TRUE    TRUE  TRUE     TRUE     TRUE     TRUE    TRUE     0.2969
+## 14:  TRUE    TRUE   FALSE  TRUE    FALSE     TRUE    FALSE    TRUE     0.2461
+## 15:  TRUE   FALSE    TRUE  TRUE     TRUE    FALSE    FALSE    TRUE     0.3281
+## 16:  TRUE    TRUE    TRUE FALSE     TRUE     TRUE     TRUE    TRUE     0.3086
+## 17: FALSE    TRUE    TRUE  TRUE     TRUE     TRUE    FALSE    TRUE     0.2695
+## 18:  TRUE    TRUE    TRUE FALSE     TRUE     TRUE     TRUE    TRUE     0.3086
+## 19:  TRUE   FALSE   FALSE  TRUE    FALSE    FALSE     TRUE   FALSE     0.3242
+## 20:  TRUE   FALSE    TRUE FALSE    FALSE    FALSE    FALSE   FALSE     0.3633
+##                                    uhash  x_domain           timestamp batch_nr
+##  1: c1e2b282-a9ce-45a4-b5e4-846ab5cc91fd &lt;list[8]&gt; 2020-10-09 06:58:18        1
+##  2: 542cc598-f3af-4c5a-a119-b6e1326d342a &lt;list[8]&gt; 2020-10-09 06:58:18        1
+##  3: d232f004-34e2-4c2a-9601-f69df4419ae6 &lt;list[8]&gt; 2020-10-09 06:58:18        1
+##  4: e5f4aee3-665c-47a7-8222-2d5cf3092494 &lt;list[8]&gt; 2020-10-09 06:58:18        1
+##  5: 1c0fc2bf-5466-45f1-84b0-cbe8b63edd6d &lt;list[8]&gt; 2020-10-09 06:58:18        1
+##  6: 3841c5f4-26d2-46b9-ad9e-a9f969674142 &lt;list[8]&gt; 2020-10-09 06:58:18        1
+##  7: 260d7d28-9562-440c-b4df-5c5e07c76880 &lt;list[8]&gt; 2020-10-09 06:58:18        1
+##  8: 307e8d5a-24c0-4086-9148-694701bc30a2 &lt;list[8]&gt; 2020-10-09 06:58:18        1
+##  9: 002ddadc-976b-4cd9-9be3-29cd94c15651 &lt;list[8]&gt; 2020-10-09 06:58:18        1
+## 10: e74270e2-b20c-48e6-aeeb-813c5a0700ec &lt;list[8]&gt; 2020-10-09 06:58:18        1
+## 11: 2079eb40-8404-46b7-ae40-bfe12a7cd178 &lt;list[8]&gt; 2020-10-09 06:58:19        2
+## 12: e55b096d-58d8-49f3-b544-df3236d879b1 &lt;list[8]&gt; 2020-10-09 06:58:19        2
+## 13: fcf3592d-b87d-4ff9-88c4-a49613712571 &lt;list[8]&gt; 2020-10-09 06:58:19        2
+## 14: 7c2c1c3c-025d-4d8b-999e-b6ce22c9151b &lt;list[8]&gt; 2020-10-09 06:58:19        2
+## 15: 81b7923c-381c-40df-9e10-996e2d05d840 &lt;list[8]&gt; 2020-10-09 06:58:19        2
+## 16: 712052e0-eb94-42d6-b38b-ffd6046f2bce &lt;list[8]&gt; 2020-10-09 06:58:19        2
+## 17: 1219ba71-5d15-43bd-b76e-aaae3a990c9c &lt;list[8]&gt; 2020-10-09 06:58:19        2
+## 18: 6e578921-3cb0-44ed-8944-0d512ba004d6 &lt;list[8]&gt; 2020-10-09 06:58:19        2
+## 19: e2040ac4-b776-4e0d-a41f-c2eeeeb0e1d9 &lt;list[8]&gt; 2020-10-09 06:58:19        2
+## 20: 74629076-4ac9-4c28-ae4c-19a8ddce6e30 &lt;list[8]&gt; 2020-10-09 06:58:19        2</code></pre>
+<p>The associated resampling iterations can be accessed in the <a href="https://mlr3.mlr-org.com/reference/BenchmarkResult.html"><code>BenchmarkResult</code></a>:</p>
+<div class="sourceCode" id="cb231"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb231-1"><a href="fs.html#cb231-1"></a>instance<span class="op">$</span>archive<span class="op">$</span>benchmark_result<span class="op">$</span>data</span></code></pre></div>
+<pre><code>## &lt;ResultData&gt;
+##   Public:
+##     as_data_table: function (view = NULL, reassemble_learners = TRUE, convert_predictions = TRUE, 
+##     clone: function (deep = FALSE) 
+##     combine: function (rdata) 
+##     data: list
+##     initialize: function (data = NULL) 
+##     iterations: function (view = NULL) 
+##     learners: function (view = NULL, states = TRUE, reassemble = TRUE) 
+##     logs: function (view = NULL, condition) 
+##     prediction: function (view = NULL, predict_sets = &quot;test&quot;) 
+##     predictions: function (view = NULL, predict_sets = &quot;test&quot;) 
+##     resamplings: function (view = NULL) 
+##     sweep: function () 
+##     task_type: active binding
+##     tasks: function (view = NULL, reassemble = TRUE) 
+##     uhashes: function (view = NULL) 
+##   Private:
+##     deep_clone: function (name, value) 
+##     get_view_index: function (view)</code></pre>
+<p>The <code>uhash</code> column links the resampling iterations to the evaluated feature subsets stored in <code>instance$archive$data()</code>. This allows e.g. to score the included <a href="https://mlr3.mlr-org.com/reference/ResampleResult.html"><code>ResampleResult</code></a>s on a different measure.</p>
+<p>Now the optimized feature subset can be used to subset the task and fit the model on all observations.</p>
+<div class="sourceCode" id="cb233"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb233-1"><a href="fs.html#cb233-1"></a>task<span class="op">$</span><span class="kw">select</span>(instance<span class="op">$</span>result_feature_set)</span>
+<span id="cb233-2"><a href="fs.html#cb233-2"></a>learner<span class="op">$</span><span class="kw">train</span>(task)</span></code></pre></div>
+<p>The trained model can now be used to make a prediction on external data.
+Note that predicting on observations present in the <code>task</code>, should be avoided.
+The model has seen these observations already during feature selection and therefore results would be statistically biased.
+Hence, the resulting performance measure would be over-optimistic.
+Instead, to get statistically unbiased performance estimates for the current task, <a href="nested-resampling.html#nested-resampling">nested resampling</a> is required.</p>
+</div>
+<div id="autofselect" class="section level3">
+<h3><span class="header-section-number">3.2.9</span> Automating the Feature Selection</h3>
+<p>The <a href="https://mlr3fselect.mlr-org.com/reference/AutoFSelect.html"><code>AutoFSelect</code></a> wraps a learner and augments it with an automatic feature selection for a given task.
+Because the <a href="https://mlr3fselect.mlr-org.com/reference/AutoFSelect.html"><code>AutoFSelect</code></a> itself inherits from the <a href="https://mlr3.mlr-org.com/reference/Learner.html"><code>Learner</code></a> base class, it can be used like any other learner.
+Analogously to the previous subsection, a new classification tree learner is created.
+This classification tree learner automatically starts a feature selection on the given task using an inner resampling (holdout).
+We create a terminator which allows 10 evaluations, and and uses a simple random search as feature selection algorithm:</p>
+<div class="sourceCode" id="cb234"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb234-1"><a href="fs.html#cb234-1"></a><span class="kw">library</span>(<span class="st">&quot;paradox&quot;</span>)</span>
+<span id="cb234-2"><a href="fs.html#cb234-2"></a><span class="kw">library</span>(<span class="st">&quot;mlr3fselect&quot;</span>)</span>
+<span id="cb234-3"><a href="fs.html#cb234-3"></a></span>
+<span id="cb234-4"><a href="fs.html#cb234-4"></a>learner =<span class="st"> </span><span class="kw">lrn</span>(<span class="st">&quot;classif.rpart&quot;</span>)</span>
+<span id="cb234-5"><a href="fs.html#cb234-5"></a>terminator =<span class="st"> </span><span class="kw">trm</span>(<span class="st">&quot;evals&quot;</span>, <span class="dt">n_evals =</span> <span class="dv">10</span>)</span>
+<span id="cb234-6"><a href="fs.html#cb234-6"></a>fselector =<span class="st"> </span><span class="kw">fs</span>(<span class="st">&quot;random_search&quot;</span>)</span>
+<span id="cb234-7"><a href="fs.html#cb234-7"></a></span>
+<span id="cb234-8"><a href="fs.html#cb234-8"></a>at =<span class="st"> </span>AutoFSelect<span class="op">$</span><span class="kw">new</span>(</span>
+<span id="cb234-9"><a href="fs.html#cb234-9"></a>  <span class="dt">learner =</span> learner,</span>
+<span id="cb234-10"><a href="fs.html#cb234-10"></a>  <span class="dt">resampling =</span> <span class="kw">rsmp</span>(<span class="st">&quot;holdout&quot;</span>),</span>
+<span id="cb234-11"><a href="fs.html#cb234-11"></a>  <span class="dt">measure =</span> <span class="kw">msr</span>(<span class="st">&quot;classif.ce&quot;</span>),</span>
+<span id="cb234-12"><a href="fs.html#cb234-12"></a>  <span class="dt">terminator =</span> terminator,</span>
+<span id="cb234-13"><a href="fs.html#cb234-13"></a>  <span class="dt">fselector =</span> fselector</span>
+<span id="cb234-14"><a href="fs.html#cb234-14"></a>)</span>
+<span id="cb234-15"><a href="fs.html#cb234-15"></a>at</span></code></pre></div>
+<pre><code>## &lt;AutoFSelect:classif.rpart.fselector&gt;
+## * Model: -
+## * Parameters: xval=0
+## * Packages: rpart
+## * Predict Type: response
+## * Feature types: logical, integer, numeric, factor, ordered
+## * Properties: importance, missings, multiclass, selected_features,
+##   twoclass, weights</code></pre>
+<p>We can now use the learner like any other learner, calling the <code>$train()</code> and <code>$predict()</code> method.
+This time however, we pass it to <a href="https://mlr3.mlr-org.com/reference/benchmark.html"><code>benchmark()</code></a> to compare the optimized feature subset to the complete feature set.
+This way, the <a href="https://mlr3fselect.mlr-org.com/reference/AutoFSelect.html"><code>AutoFSelect</code></a> will do its resampling for feature selection on the training set of the respective split of the outer resampling.
+The learner then undertakes predictions using the test set of the outer resampling.
+This yields unbiased performance measures, as the observations in the test set have not been used during feature selection or fitting of the respective learner.
+This is called <a href="nested-resampling.html#nested-resampling">nested resampling</a>.</p>
+<p>To compare the optimized feature subset with the complete feature set, we can use <a href="https://mlr3.mlr-org.com/reference/benchmark.html"><code>benchmark()</code></a>:</p>
+<div class="sourceCode" id="cb236"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb236-1"><a href="fs.html#cb236-1"></a>grid =<span class="st"> </span><span class="kw">benchmark_grid</span>(</span>
+<span id="cb236-2"><a href="fs.html#cb236-2"></a>  <span class="dt">task =</span> <span class="kw">tsk</span>(<span class="st">&quot;pima&quot;</span>),</span>
+<span id="cb236-3"><a href="fs.html#cb236-3"></a>  <span class="dt">learner =</span> <span class="kw">list</span>(at, <span class="kw">lrn</span>(<span class="st">&quot;classif.rpart&quot;</span>)),</span>
+<span id="cb236-4"><a href="fs.html#cb236-4"></a>  <span class="dt">resampling =</span> <span class="kw">rsmp</span>(<span class="st">&quot;cv&quot;</span>, <span class="dt">folds =</span> <span class="dv">3</span>)</span>
+<span id="cb236-5"><a href="fs.html#cb236-5"></a>)</span>
+<span id="cb236-6"><a href="fs.html#cb236-6"></a></span>
+<span id="cb236-7"><a href="fs.html#cb236-7"></a><span class="co"># avoid console output from mlrfselect</span></span>
+<span id="cb236-8"><a href="fs.html#cb236-8"></a>logger =<span class="st"> </span>lgr<span class="op">::</span><span class="kw">get_logger</span>(<span class="st">&quot;bbotk&quot;</span>)</span>
+<span id="cb236-9"><a href="fs.html#cb236-9"></a>logger<span class="op">$</span><span class="kw">set_threshold</span>(<span class="st">&quot;warn&quot;</span>)</span>
+<span id="cb236-10"><a href="fs.html#cb236-10"></a></span>
+<span id="cb236-11"><a href="fs.html#cb236-11"></a>bmr =<span class="st"> </span><span class="kw">benchmark</span>(grid, <span class="dt">store_models =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb236-12"><a href="fs.html#cb236-12"></a>bmr<span class="op">$</span><span class="kw">aggregate</span>(<span class="kw">msrs</span>(<span class="kw">c</span>(<span class="st">&quot;classif.ce&quot;</span>, <span class="st">&quot;time_train&quot;</span>)))</span></code></pre></div>
+<pre><code>##    nr      resample_result task_id              learner_id resampling_id iters
+## 1:  1 &lt;ResampleResult[21]&gt;    pima classif.rpart.fselector            cv     3
+## 2:  2 &lt;ResampleResult[21]&gt;    pima           classif.rpart            cv     3
+##    classif.ce time_train
+## 1:     0.2721          0
+## 2:     0.2448          0</code></pre>
+<p>Note that we do not expect any significant differences since we only evaluated a small fraction of the possible feature subsets.</p>
+
+</div>
+</div>
+<h3>References</h3>
+<div id="refs" class="references">
+<div id="ref-chandrashekar2014">
+<p>Chandrashekar, Girish, and Ferat Sahin. 2014. “A Survey on Feature Selection Methods.” <em>Computers and Electrical Engineering</em> 40 (1): 16–28. <a href="https://doi.org/https://doi.org/10.1016/j.compeleceng.2013.11.024">https://doi.org/https://doi.org/10.1016/j.compeleceng.2013.11.024</a>.</p>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="tuning.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="nested-resampling.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": true,
+"facebook": false,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/mlr-org/mlr3book/edit/master/bookdown/03-optimization-feature-selection.Rmd",
+"text": "Edit this chapter"
+},
+"history": {
+"link": "https://github.com/mlr-org/mlr3book/commits/master/03-optimization-feature-selection.Rmd",
+"text": "Edit history"
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": [["mlr3book.pdf", "PDF"]],
+"toc": {
+"collapse": "section"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

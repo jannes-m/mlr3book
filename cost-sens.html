@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>7.6 Cost-Sensitive Classification | mlr3 book</title>
+  <meta name="description" content="7.6 Cost-Sensitive Classification | mlr3 book" />
+  <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="7.6 Cost-Sensitive Classification | mlr3 book" />
+  <meta property="og:type" content="book" />
+  <meta property="og:url" content="https://mlr3book.mlr-org.com/" />
+  <meta property="og:image" content="https://mlr3book.mlr-org.com/block.png" />
+  
+  <meta name="github-repo" content="mlr-org/mlr3book" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="7.6 Cost-Sensitive Classification | mlr3 book" />
+  
+  
+  <meta name="twitter:image" content="https://mlr3book.mlr-org.com/block.png" />
+
+<meta name="author" content="Michel Lang" />
+<meta name="author" content="Patrick Schratz" />
+<meta name="author" content="Martin Binder" />
+<meta name="author" content="Florian Pfisterer" />
+<meta name="author" content="Jakob Richter" />
+<meta name="author" content="Nicholas G. Reich" />
+<meta name="author" content="Bernd Bischl" />
+<meta name="author" content="Marc Becker" />
+
+
+<meta name="date" content="2020-10-09" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <link rel="apple-touch-icon-precomposed" sizes="180x180" href="apple-touch-icon.png" />
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+<link rel="prev" href="multilabel.html"/>
+<link rel="next" href="interpretation.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
+
+
+<style type="text/css">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">mlr3 Manual <img src='https://raw.githubusercontent.com/mlr-org/mlr3/master/man/figures/logo.png' width=30 /></a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Citation Info</a></li>
+<li class="chapter" data-level="" data-path="quickstart.html"><a href="quickstart.html"><i class="fa fa-check"></i>Quickstart</a></li>
+<li class="chapter" data-level="1" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction and Overview</a></li>
+<li class="chapter" data-level="2" data-path="basics.html"><a href="basics.html"><i class="fa fa-check"></i><b>2</b> Basics</a><ul>
+<li class="chapter" data-level="2.1" data-path="r6.html"><a href="r6.html"><i class="fa fa-check"></i><b>2.1</b> Quick R6 Intro for Beginners</a></li>
+<li class="chapter" data-level="2.2" data-path="tasks.html"><a href="tasks.html"><i class="fa fa-check"></i><b>2.2</b> Tasks</a><ul>
+<li class="chapter" data-level="2.2.1" data-path="tasks.html"><a href="tasks.html#tasks-types"><i class="fa fa-check"></i><b>2.2.1</b> Task Types</a></li>
+<li class="chapter" data-level="2.2.2" data-path="tasks.html"><a href="tasks.html#tasks-creation"><i class="fa fa-check"></i><b>2.2.2</b> Task Creation</a></li>
+<li class="chapter" data-level="2.2.3" data-path="tasks.html"><a href="tasks.html#tasks-predefined"><i class="fa fa-check"></i><b>2.2.3</b> Predefined tasks</a></li>
+<li class="chapter" data-level="2.2.4" data-path="tasks.html"><a href="tasks.html#tasks-api"><i class="fa fa-check"></i><b>2.2.4</b> Task API</a><ul>
+<li class="chapter" data-level="2.2.4.1" data-path="tasks.html"><a href="tasks.html#tasks-retrieving"><i class="fa fa-check"></i><b>2.2.4.1</b> Retrieving Data</a></li>
+<li class="chapter" data-level="2.2.4.2" data-path="tasks.html"><a href="tasks.html#tasks-roles"><i class="fa fa-check"></i><b>2.2.4.2</b> Roles (Rows and Columns)</a></li>
+<li class="chapter" data-level="2.2.4.3" data-path="tasks.html"><a href="tasks.html#tasks-mutators"><i class="fa fa-check"></i><b>2.2.4.3</b> Task Mutators</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2.5" data-path="tasks.html"><a href="tasks.html#autoplot-task"><i class="fa fa-check"></i><b>2.2.5</b> Plotting Tasks</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="learners.html"><a href="learners.html"><i class="fa fa-check"></i><b>2.3</b> Learners</a><ul>
+<li class="chapter" data-level="2.3.1" data-path="learners.html"><a href="learners.html#learners-predefined"><i class="fa fa-check"></i><b>2.3.1</b> Predefined Learners</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="train-predict.html"><a href="train-predict.html"><i class="fa fa-check"></i><b>2.4</b> Train and Predict</a><ul>
+<li class="chapter" data-level="2.4.1" data-path="train-predict.html"><a href="train-predict.html#train-predict-objects"><i class="fa fa-check"></i><b>2.4.1</b> Creating Task and Learner Objects</a></li>
+<li class="chapter" data-level="2.4.2" data-path="train-predict.html"><a href="train-predict.html#split-data"><i class="fa fa-check"></i><b>2.4.2</b> Setting up the train/test splits of the data</a></li>
+<li class="chapter" data-level="2.4.3" data-path="train-predict.html"><a href="train-predict.html#training"><i class="fa fa-check"></i><b>2.4.3</b> Training the learner</a></li>
+<li class="chapter" data-level="2.4.4" data-path="train-predict.html"><a href="train-predict.html#predicting"><i class="fa fa-check"></i><b>2.4.4</b> Predicting</a></li>
+<li class="chapter" data-level="2.4.5" data-path="train-predict.html"><a href="train-predict.html#predict-type"><i class="fa fa-check"></i><b>2.4.5</b> Changing the Predict Type</a></li>
+<li class="chapter" data-level="2.4.6" data-path="train-predict.html"><a href="train-predict.html#autoplot-prediction"><i class="fa fa-check"></i><b>2.4.6</b> Plotting Predictions</a></li>
+<li class="chapter" data-level="2.4.7" data-path="train-predict.html"><a href="train-predict.html#measure"><i class="fa fa-check"></i><b>2.4.7</b> Performance assessment</a></li>
+</ul></li>
+<li class="chapter" data-level="2.5" data-path="resampling.html"><a href="resampling.html"><i class="fa fa-check"></i><b>2.5</b> Resampling</a><ul>
+<li class="chapter" data-level="2.5.1" data-path="resampling.html"><a href="resampling.html#resampling-settings"><i class="fa fa-check"></i><b>2.5.1</b> Settings</a></li>
+<li class="chapter" data-level="2.5.2" data-path="resampling.html"><a href="resampling.html#resampling-inst"><i class="fa fa-check"></i><b>2.5.2</b> Instantiation</a></li>
+<li class="chapter" data-level="2.5.3" data-path="resampling.html"><a href="resampling.html#resampling-exec"><i class="fa fa-check"></i><b>2.5.3</b> Execution</a></li>
+<li class="chapter" data-level="2.5.4" data-path="resampling.html"><a href="resampling.html#resamp-custom"><i class="fa fa-check"></i><b>2.5.4</b> Custom resampling</a></li>
+<li class="chapter" data-level="2.5.5" data-path="resampling.html"><a href="resampling.html#autoplot-resampleresult"><i class="fa fa-check"></i><b>2.5.5</b> Plotting Resample Results</a></li>
+</ul></li>
+<li class="chapter" data-level="2.6" data-path="benchmarking.html"><a href="benchmarking.html"><i class="fa fa-check"></i><b>2.6</b> Benchmarking</a><ul>
+<li class="chapter" data-level="2.6.1" data-path="benchmarking.html"><a href="benchmarking.html#bm-design"><i class="fa fa-check"></i><b>2.6.1</b> Design Creation</a></li>
+<li class="chapter" data-level="2.6.2" data-path="benchmarking.html"><a href="benchmarking.html#bm-exec"><i class="fa fa-check"></i><b>2.6.2</b> Execution and Aggregation of Results</a></li>
+<li class="chapter" data-level="2.6.3" data-path="benchmarking.html"><a href="benchmarking.html#autoplot-benchmarkresult"><i class="fa fa-check"></i><b>2.6.3</b> Plotting Benchmark Results</a></li>
+<li class="chapter" data-level="2.6.4" data-path="benchmarking.html"><a href="benchmarking.html#bm-resamp"><i class="fa fa-check"></i><b>2.6.4</b> Extracting ResampleResults</a></li>
+<li class="chapter" data-level="2.6.5" data-path="benchmarking.html"><a href="benchmarking.html#converting-and-merging-resampleresults"><i class="fa fa-check"></i><b>2.6.5</b> Converting and Merging ResampleResults</a></li>
+</ul></li>
+<li class="chapter" data-level="2.7" data-path="binary-classification.html"><a href="binary-classification.html"><i class="fa fa-check"></i><b>2.7</b> Binary classification</a><ul>
+<li class="chapter" data-level="2.7.1" data-path="binary-classification.html"><a href="binary-classification.html#binary-roc"><i class="fa fa-check"></i><b>2.7.1</b> ROC Curve and Thresholds</a></li>
+<li class="chapter" data-level="2.7.2" data-path="binary-classification.html"><a href="binary-classification.html#threshold-tuning"><i class="fa fa-check"></i><b>2.7.2</b> Threshold Tuning</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="optimization.html"><a href="optimization.html"><i class="fa fa-check"></i><b>3</b> Model Optimization</a><ul>
+<li class="chapter" data-level="3.1" data-path="tuning.html"><a href="tuning.html"><i class="fa fa-check"></i><b>3.1</b> Hyperparameter Tuning</a><ul>
+<li class="chapter" data-level="3.1.1" data-path="tuning.html"><a href="tuning.html#tuning-optimization"><i class="fa fa-check"></i><b>3.1.1</b> The <code>TuningInstance</code> Classes</a></li>
+<li class="chapter" data-level="3.1.2" data-path="tuning.html"><a href="tuning.html#the-tuner-class"><i class="fa fa-check"></i><b>3.1.2</b> The <code>Tuner</code> Class</a></li>
+<li class="chapter" data-level="3.1.3" data-path="tuning.html"><a href="tuning.html#tuning-triggering"><i class="fa fa-check"></i><b>3.1.3</b> Triggering the Tuning</a></li>
+<li class="chapter" data-level="3.1.4" data-path="tuning.html"><a href="tuning.html#autotuner"><i class="fa fa-check"></i><b>3.1.4</b> Automating the Tuning</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="fs.html"><a href="fs.html"><i class="fa fa-check"></i><b>3.2</b> Feature Selection / Filtering</a><ul>
+<li class="chapter" data-level="3.2.1" data-path="fs.html"><a href="fs.html#fs-filter"><i class="fa fa-check"></i><b>3.2.1</b> Filters</a></li>
+<li class="chapter" data-level="3.2.2" data-path="fs.html"><a href="fs.html#fs-calc"><i class="fa fa-check"></i><b>3.2.2</b> Calculating filter values</a></li>
+<li class="chapter" data-level="3.2.3" data-path="fs.html"><a href="fs.html#fs-var-imp-filters"><i class="fa fa-check"></i><b>3.2.3</b> Variable Importance Filters</a></li>
+<li class="chapter" data-level="3.2.4" data-path="fs.html"><a href="fs.html#fs-ensemble"><i class="fa fa-check"></i><b>3.2.4</b> Ensemble Methods</a></li>
+<li class="chapter" data-level="3.2.5" data-path="fs.html"><a href="fs.html#fs-wrapper"><i class="fa fa-check"></i><b>3.2.5</b> Wrapper Methods</a></li>
+<li class="chapter" data-level="3.2.6" data-path="fs.html"><a href="fs.html#fs-wrapper-optimization"><i class="fa fa-check"></i><b>3.2.6</b> The <code>FSelectInstance</code> Classes</a></li>
+<li class="chapter" data-level="3.2.7" data-path="fs.html"><a href="fs.html#the-fselector-class"><i class="fa fa-check"></i><b>3.2.7</b> The <code>FSelector</code> Class</a></li>
+<li class="chapter" data-level="3.2.8" data-path="fs.html"><a href="fs.html#wrapper-selection-triggering"><i class="fa fa-check"></i><b>3.2.8</b> Triggering the Tuning</a></li>
+<li class="chapter" data-level="3.2.9" data-path="fs.html"><a href="fs.html#autofselect"><i class="fa fa-check"></i><b>3.2.9</b> Automating the Feature Selection</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="nested-resampling.html"><a href="nested-resampling.html"><i class="fa fa-check"></i><b>3.3</b> Nested Resampling</a><ul>
+<li class="chapter" data-level="3.3.1" data-path="nested-resampling.html"><a href="nested-resampling.html#nested-resamp-exec"><i class="fa fa-check"></i><b>3.3.1</b> Execution</a></li>
+<li class="chapter" data-level="3.3.2" data-path="nested-resampling.html"><a href="nested-resampling.html#nested-resamp-eval"><i class="fa fa-check"></i><b>3.3.2</b> Evaluation</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="pipelines.html"><a href="pipelines.html"><i class="fa fa-check"></i><b>4</b> Pipelines</a><ul>
+<li class="chapter" data-level="4.1" data-path="pipe-pipeops.html"><a href="pipe-pipeops.html"><i class="fa fa-check"></i><b>4.1</b> The Building Blocks: PipeOps</a></li>
+<li class="chapter" data-level="4.2" data-path="pipe-operator.html"><a href="pipe-operator.html"><i class="fa fa-check"></i><b>4.2</b> The Pipeline Operator: <code>%&gt;&gt;%</code></a></li>
+<li class="chapter" data-level="4.3" data-path="pipe-nodes-edges-graphs.html"><a href="pipe-nodes-edges-graphs.html"><i class="fa fa-check"></i><b>4.3</b> Nodes, Edges and Graphs</a></li>
+<li class="chapter" data-level="4.4" data-path="pipe-modeling.html"><a href="pipe-modeling.html"><i class="fa fa-check"></i><b>4.4</b> Modeling</a><ul>
+<li class="chapter" data-level="4.4.1" data-path="pipe-modeling.html"><a href="pipe-modeling.html#pipe-hyperpars"><i class="fa fa-check"></i><b>4.4.1</b> Setting Hyperparameters</a></li>
+<li class="chapter" data-level="4.4.2" data-path="pipe-modeling.html"><a href="pipe-modeling.html#pipe-tuning"><i class="fa fa-check"></i><b>4.4.2</b> Tuning</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="pipe-nonlinear.html"><a href="pipe-nonlinear.html"><i class="fa fa-check"></i><b>4.5</b> Non-Linear Graphs</a><ul>
+<li class="chapter" data-level="4.5.1" data-path="pipe-nonlinear.html"><a href="pipe-nonlinear.html#pipe-model-ensembles-branching-copying"><i class="fa fa-check"></i><b>4.5.1</b> Branching &amp; Copying</a></li>
+<li class="chapter" data-level="4.5.2" data-path="pipe-nonlinear.html"><a href="pipe-nonlinear.html#pipe-model-ensembles"><i class="fa fa-check"></i><b>4.5.2</b> Model Ensembles</a><ul>
+<li class="chapter" data-level="4.5.2.1" data-path="pipe-nonlinear.html"><a href="pipe-nonlinear.html#pipe-model-ensembles-bagging"><i class="fa fa-check"></i><b>4.5.2.1</b> Bagging</a></li>
+<li class="chapter" data-level="4.5.2.2" data-path="pipe-nonlinear.html"><a href="pipe-nonlinear.html#pipe-model-ensembles-stacking"><i class="fa fa-check"></i><b>4.5.2.2</b> Stacking</a></li>
+<li class="chapter" data-level="4.5.2.3" data-path="pipe-nonlinear.html"><a href="pipe-nonlinear.html#multilevel-stacking"><i class="fa fa-check"></i><b>4.5.2.3</b> Multilevel Stacking</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4.6" data-path="pipe-special-ops.html"><a href="pipe-special-ops.html"><i class="fa fa-check"></i><b>4.6</b> Special Operators</a><ul>
+<li class="chapter" data-level="4.6.1" data-path="pipe-special-ops.html"><a href="pipe-special-ops.html#imputation-pipeopimpute"><i class="fa fa-check"></i><b>4.6.1</b> Imputation: <code>PipeOpImpute</code></a></li>
+<li class="chapter" data-level="4.6.2" data-path="pipe-special-ops.html"><a href="pipe-special-ops.html#feature-engineering-pipeopmutate"><i class="fa fa-check"></i><b>4.6.2</b> Feature Engineering: <code>PipeOpMutate</code></a></li>
+<li class="chapter" data-level="4.6.3" data-path="pipe-special-ops.html"><a href="pipe-special-ops.html#training-on-data-subsets-pipeopchunk"><i class="fa fa-check"></i><b>4.6.3</b> Training on data subsets: <code>PipeOpChunk</code></a></li>
+<li class="chapter" data-level="4.6.4" data-path="pipe-special-ops.html"><a href="pipe-special-ops.html#feature-selection-pipeopfilter-and-pipeopselect"><i class="fa fa-check"></i><b>4.6.4</b> Feature Selection: <code>PipeOpFilter</code> and <code>PipeOpSelect</code></a></li>
+</ul></li>
+<li class="chapter" data-level="4.7" data-path="in-depth-pipelines.html"><a href="in-depth-pipelines.html"><i class="fa fa-check"></i><b>4.7</b> In-depth look into mlr3pipelines</a><ul>
+<li class="chapter" data-level="4.7.1" data-path="in-depth-pipelines.html"><a href="in-depth-pipelines.html#whats-the-point"><i class="fa fa-check"></i><b>4.7.1</b> What’s the Point</a></li>
+<li class="chapter" data-level="4.7.2" data-path="in-depth-pipelines.html"><a href="in-depth-pipelines.html#pipeop-pipeline-operators"><i class="fa fa-check"></i><b>4.7.2</b> <code>PipeOp</code>: Pipeline Operators</a><ul>
+<li class="chapter" data-level="4.7.2.1" data-path="in-depth-pipelines.html"><a href="in-depth-pipelines.html#why-the-state"><i class="fa fa-check"></i><b>4.7.2.1</b> Why the <code>$state</code></a></li>
+<li class="chapter" data-level="4.7.2.2" data-path="in-depth-pipelines.html"><a href="in-depth-pipelines.html#where-to-get-pipeops"><i class="fa fa-check"></i><b>4.7.2.2</b> Where to Get <code>PipeOp</code>s</a></li>
+</ul></li>
+<li class="chapter" data-level="4.7.3" data-path="in-depth-pipelines.html"><a href="in-depth-pipelines.html#pipeop-channels"><i class="fa fa-check"></i><b>4.7.3</b> PipeOp Channels</a><ul>
+<li class="chapter" data-level="4.7.3.1" data-path="in-depth-pipelines.html"><a href="in-depth-pipelines.html#input-channels"><i class="fa fa-check"></i><b>4.7.3.1</b> Input Channels</a></li>
+<li class="chapter" data-level="4.7.3.2" data-path="in-depth-pipelines.html"><a href="in-depth-pipelines.html#output-channels"><i class="fa fa-check"></i><b>4.7.3.2</b> Output Channels</a></li>
+<li class="chapter" data-level="4.7.3.3" data-path="in-depth-pipelines.html"><a href="in-depth-pipelines.html#channel-configuration"><i class="fa fa-check"></i><b>4.7.3.3</b> Channel Configuration</a></li>
+</ul></li>
+<li class="chapter" data-level="4.7.4" data-path="in-depth-pipelines.html"><a href="in-depth-pipelines.html#graph-networks-of-pipeops"><i class="fa fa-check"></i><b>4.7.4</b> <code>Graph</code>: Networks of <code>PipeOp</code>s</a><ul>
+<li class="chapter" data-level="4.7.4.1" data-path="basics.html"><a href="basics.html#basics"><i class="fa fa-check"></i><b>4.7.4.1</b> Basics</a></li>
+<li class="chapter" data-level="4.7.4.2" data-path="in-depth-pipelines.html"><a href="in-depth-pipelines.html#networks"><i class="fa fa-check"></i><b>4.7.4.2</b> Networks</a></li>
+<li class="chapter" data-level="4.7.4.3" data-path="in-depth-pipelines.html"><a href="in-depth-pipelines.html#syntactic-sugar"><i class="fa fa-check"></i><b>4.7.4.3</b> Syntactic Sugar</a></li>
+<li class="chapter" data-level="4.7.4.4" data-path="in-depth-pipelines.html"><a href="in-depth-pipelines.html#pipeop-ids-and-id-name-clashes"><i class="fa fa-check"></i><b>4.7.4.4</b> <code>PipeOp</code> IDs and ID Name Clashes</a></li>
+</ul></li>
+<li class="chapter" data-level="4.7.5" data-path="in-depth-pipelines.html"><a href="in-depth-pipelines.html#learners-in-graphs-graphs-in-learners"><i class="fa fa-check"></i><b>4.7.5</b> Learners in Graphs, Graphs in Learners</a><ul>
+<li class="chapter" data-level="4.7.5.1" data-path="in-depth-pipelines.html"><a href="in-depth-pipelines.html#pipeoplearner"><i class="fa fa-check"></i><b>4.7.5.1</b> <code>PipeOpLearner</code></a></li>
+<li class="chapter" data-level="4.7.5.2" data-path="in-depth-pipelines.html"><a href="in-depth-pipelines.html#graphlearner"><i class="fa fa-check"></i><b>4.7.5.2</b> <code>GraphLearner</code></a></li>
+</ul></li>
+<li class="chapter" data-level="4.7.6" data-path="in-depth-pipelines.html"><a href="in-depth-pipelines.html#hyperparameters"><i class="fa fa-check"></i><b>4.7.6</b> Hyperparameters</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="technical.html"><a href="technical.html"><i class="fa fa-check"></i><b>5</b> Technical</a><ul>
+<li class="chapter" data-level="5.1" data-path="parallelization.html"><a href="parallelization.html"><i class="fa fa-check"></i><b>5.1</b> Parallelization</a></li>
+<li class="chapter" data-level="5.2" data-path="error-handling.html"><a href="error-handling.html"><i class="fa fa-check"></i><b>5.2</b> Error Handling</a><ul>
+<li class="chapter" data-level="5.2.1" data-path="error-handling.html"><a href="error-handling.html#encapsulation"><i class="fa fa-check"></i><b>5.2.1</b> Encapsulation</a></li>
+<li class="chapter" data-level="5.2.2" data-path="error-handling.html"><a href="error-handling.html#fallback-learners"><i class="fa fa-check"></i><b>5.2.2</b> Fallback learners</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="backends.html"><a href="backends.html"><i class="fa fa-check"></i><b>5.3</b> Database Backends</a><ul>
+<li class="chapter" data-level="5.3.1" data-path="backends.html"><a href="backends.html#use-case-nyc-flights"><i class="fa fa-check"></i><b>5.3.1</b> Use Case: NYC Flights</a></li>
+<li class="chapter" data-level="5.3.2" data-path="backends.html"><a href="backends.html#preprocessing-with-dplyr"><i class="fa fa-check"></i><b>5.3.2</b> Preprocessing with <code>dplyr</code></a></li>
+<li class="chapter" data-level="5.3.3" data-path="backends.html"><a href="backends.html#databackenddplyr"><i class="fa fa-check"></i><b>5.3.3</b> DataBackendDplyr</a></li>
+<li class="chapter" data-level="5.3.4" data-path="backends.html"><a href="backends.html#model-fitting"><i class="fa fa-check"></i><b>5.3.4</b> Model fitting</a></li>
+<li class="chapter" data-level="5.3.5" data-path="backends.html"><a href="backends.html#cleanup"><i class="fa fa-check"></i><b>5.3.5</b> Cleanup</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4" data-path="paradox.html"><a href="paradox.html"><i class="fa fa-check"></i><b>5.4</b> Parameters (using <code>paradox</code>)</a><ul>
+<li class="chapter" data-level="5.4.1" data-path="paradox.html"><a href="paradox.html#reference-based-objects"><i class="fa fa-check"></i><b>5.4.1</b> Reference Based Objects</a></li>
+<li class="chapter" data-level="5.4.2" data-path="paradox.html"><a href="paradox.html#defining-a-parameter-space"><i class="fa fa-check"></i><b>5.4.2</b> Defining a Parameter Space</a><ul>
+<li class="chapter" data-level="5.4.2.1" data-path="paradox.html"><a href="paradox.html#single-parameters"><i class="fa fa-check"></i><b>5.4.2.1</b> Single Parameters</a></li>
+<li class="chapter" data-level="5.4.2.2" data-path="paradox.html"><a href="paradox.html#parameter-sets"><i class="fa fa-check"></i><b>5.4.2.2</b> Parameter Sets</a></li>
+<li class="chapter" data-level="5.4.2.3" data-path="paradox.html"><a href="paradox.html#vector-parameters"><i class="fa fa-check"></i><b>5.4.2.3</b> Vector Parameters</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4.3" data-path="paradox.html"><a href="paradox.html#parameter-sampling"><i class="fa fa-check"></i><b>5.4.3</b> Parameter Sampling</a><ul>
+<li class="chapter" data-level="5.4.3.1" data-path="paradox.html"><a href="paradox.html#parameter-designs"><i class="fa fa-check"></i><b>5.4.3.1</b> Parameter Designs</a></li>
+<li class="chapter" data-level="5.4.3.2" data-path="paradox.html"><a href="paradox.html#grid-design"><i class="fa fa-check"></i><b>5.4.3.2</b> Grid Design</a></li>
+<li class="chapter" data-level="5.4.3.3" data-path="paradox.html"><a href="paradox.html#random-sampling"><i class="fa fa-check"></i><b>5.4.3.3</b> Random Sampling</a></li>
+<li class="chapter" data-level="5.4.3.4" data-path="paradox.html"><a href="paradox.html#generalized-sampling-the-sampler-class"><i class="fa fa-check"></i><b>5.4.3.4</b> Generalized Sampling: The <code>Sampler</code> Class</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4.4" data-path="paradox.html"><a href="paradox.html#parameter-transformation"><i class="fa fa-check"></i><b>5.4.4</b> Parameter Transformation</a><ul>
+<li class="chapter" data-level="5.4.4.1" data-path="paradox.html"><a href="paradox.html#transformation-between-types"><i class="fa fa-check"></i><b>5.4.4.1</b> Transformation between Types</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5.5" data-path="logging.html"><a href="logging.html"><i class="fa fa-check"></i><b>5.5</b> Logging</a><ul>
+<li class="chapter" data-level="5.5.1" data-path="logging.html"><a href="logging.html#changing-mlr3-logging-levels"><i class="fa fa-check"></i><b>5.5.1</b> Changing mlr3 logging levels</a></li>
+<li class="chapter" data-level="5.5.2" data-path="logging.html"><a href="logging.html#redirecting-output"><i class="fa fa-check"></i><b>5.5.2</b> Redirecting output</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="extending.html"><a href="extending.html"><i class="fa fa-check"></i><b>6</b> Extending</a><ul>
+<li class="chapter" data-level="6.1" data-path="extending-learners.html"><a href="extending-learners.html"><i class="fa fa-check"></i><b>6.1</b> Adding new Learners</a><ul>
+<li class="chapter" data-level="6.1.1" data-path="extending-learners.html"><a href="extending-learners.html#learner-meta-information"><i class="fa fa-check"></i><b>6.1.1</b> Meta-information</a></li>
+<li class="chapter" data-level="6.1.2" data-path="extending-learners.html"><a href="extending-learners.html#learner-train"><i class="fa fa-check"></i><b>6.1.2</b> Train function</a></li>
+<li class="chapter" data-level="6.1.3" data-path="extending-learners.html"><a href="extending-learners.html#learner-predict"><i class="fa fa-check"></i><b>6.1.3</b> Predict function</a></li>
+<li class="chapter" data-level="6.1.4" data-path="extending-learners.html"><a href="extending-learners.html#learner-control"><i class="fa fa-check"></i><b>6.1.4</b> Control objects/functions of learners</a></li>
+<li class="chapter" data-level="6.1.5" data-path="extending-learners.html"><a href="extending-learners.html#learner-test"><i class="fa fa-check"></i><b>6.1.5</b> Testing the learner</a><ul>
+<li class="chapter" data-level="6.1.5.1" data-path="extending-learners.html"><a href="extending-learners.html#train-and-predict"><i class="fa fa-check"></i><b>6.1.5.1</b> Train and Predict</a></li>
+<li class="chapter" data-level="6.1.5.2" data-path="extending-learners.html"><a href="extending-learners.html#checking-parameters"><i class="fa fa-check"></i><b>6.1.5.2</b> Checking Parameters</a></li>
+</ul></li>
+<li class="chapter" data-level="6.1.6" data-path="extending-learners.html"><a href="extending-learners.html#learner-faq"><i class="fa fa-check"></i><b>6.1.6</b> Learner FAQ</a></li>
+</ul></li>
+<li class="chapter" data-level="6.2" data-path="extending-measures.html"><a href="extending-measures.html"><i class="fa fa-check"></i><b>6.2</b> Adding new Measures</a></li>
+<li class="chapter" data-level="6.3" data-path="extending-pipeops.html"><a href="extending-pipeops.html"><i class="fa fa-check"></i><b>6.3</b> Adding new PipeOps</a><ul>
+<li class="chapter" data-level="6.3.1" data-path="extending-pipeops.html"><a href="extending-pipeops.html#ext-pipeopcopy"><i class="fa fa-check"></i><b>6.3.1</b> General Case Example: <code>PipeOpCopy</code></a><ul>
+<li class="chapter" data-level="6.3.1.1" data-path="extending-pipeops.html"><a href="extending-pipeops.html#first-steps-inheriting-from-pipeop"><i class="fa fa-check"></i><b>6.3.1.1</b> First Steps: Inheriting from <code>PipeOp</code></a></li>
+<li class="chapter" data-level="6.3.1.2" data-path="extending-pipeops.html"><a href="extending-pipeops.html#channel-definitions"><i class="fa fa-check"></i><b>6.3.1.2</b> Channel Definitions</a></li>
+<li class="chapter" data-level="6.3.1.3" data-path="extending-learners.html"><a href="extending-learners.html#train-and-predict"><i class="fa fa-check"></i><b>6.3.1.3</b> Train and Predict</a></li>
+<li class="chapter" data-level="6.3.1.4" data-path="extending-pipeops.html"><a href="extending-pipeops.html#putting-it-together"><i class="fa fa-check"></i><b>6.3.1.4</b> Putting it Together</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3.2" data-path="extending-pipeops.html"><a href="extending-pipeops.html#ext-pipe-preproc"><i class="fa fa-check"></i><b>6.3.2</b> Special Case: Preprocessing</a><ul>
+<li class="chapter" data-level="6.3.2.1" data-path="extending-pipeops.html"><a href="extending-pipeops.html#example-pipeopdropna"><i class="fa fa-check"></i><b>6.3.2.1</b> Example: <code>PipeOpDropNA</code></a></li>
+<li class="chapter" data-level="6.3.2.2" data-path="extending-pipeops.html"><a href="extending-pipeops.html#example-pipeopscalealways"><i class="fa fa-check"></i><b>6.3.2.2</b> Example: <code>PipeOpScaleAlways</code></a></li>
+</ul></li>
+<li class="chapter" data-level="6.3.3" data-path="extending-pipeops.html"><a href="extending-pipeops.html#special-case-preprocessing-with-simple-train"><i class="fa fa-check"></i><b>6.3.3</b> Special Case: Preprocessing with Simple Train</a><ul>
+<li class="chapter" data-level="6.3.3.1" data-path="extending-pipeops.html"><a href="extending-pipeops.html#example-pipeopdropconst"><i class="fa fa-check"></i><b>6.3.3.1</b> Example: <code>PipeOpDropConst</code></a></li>
+<li class="chapter" data-level="6.3.3.2" data-path="extending-pipeops.html"><a href="extending-pipeops.html#example-pipeopscalealwayssimple"><i class="fa fa-check"></i><b>6.3.3.2</b> Example: <code>PipeOpScaleAlwaysSimple</code></a></li>
+</ul></li>
+<li class="chapter" data-level="6.3.4" data-path="extending-pipeops.html"><a href="extending-pipeops.html#ext-pipe-hyperpars"><i class="fa fa-check"></i><b>6.3.4</b> Hyperparameters</a><ul>
+<li class="chapter" data-level="6.3.4.1" data-path="extending-pipeops.html"><a href="extending-pipeops.html#hyperparameter-example-pipeopscale"><i class="fa fa-check"></i><b>6.3.4.1</b> Hyperparameter Example: <code>PipeOpScale</code></a></li>
+</ul></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="special-tasks.html"><a href="special-tasks.html"><i class="fa fa-check"></i><b>7</b> Special Tasks</a><ul>
+<li class="chapter" data-level="7.1" data-path="survival.html"><a href="survival.html"><i class="fa fa-check"></i><b>7.1</b> Survival Analysis</a><ul>
+<li class="chapter" data-level="7.1.1" data-path="survival.html"><a href="survival.html#tasksurv"><i class="fa fa-check"></i><b>7.1.1</b> TaskSurv</a></li>
+<li class="chapter" data-level="7.1.2" data-path="survival.html"><a href="survival.html#predict-types---crank-lp-and-distr"><i class="fa fa-check"></i><b>7.1.2</b> Predict Types - crank, lp, and distr</a></li>
+<li class="chapter" data-level="7.1.3" data-path="survival.html"><a href="survival.html#composition"><i class="fa fa-check"></i><b>7.1.3</b> Composition</a></li>
+<li class="chapter" data-level="7.1.4" data-path="survival.html"><a href="survival.html#benchmark-experiment"><i class="fa fa-check"></i><b>7.1.4</b> Benchmark Experiment</a></li>
+</ul></li>
+<li class="chapter" data-level="7.2" data-path="spatial.html"><a href="spatial.html"><i class="fa fa-check"></i><b>7.2</b> Spatial Analysis</a></li>
+<li class="chapter" data-level="7.3" data-path="ordinal.html"><a href="ordinal.html"><i class="fa fa-check"></i><b>7.3</b> Ordinal Analysis</a></li>
+<li class="chapter" data-level="7.4" data-path="functional.html"><a href="functional.html"><i class="fa fa-check"></i><b>7.4</b> Functional Analysis</a><ul>
+<li class="chapter" data-level="7.4.1" data-path="functional.html"><a href="functional.html#how-to-model-functional-data"><i class="fa fa-check"></i><b>7.4.1</b> How to model functional data?</a></li>
+</ul></li>
+<li class="chapter" data-level="7.5" data-path="multilabel.html"><a href="multilabel.html"><i class="fa fa-check"></i><b>7.5</b> Multilabel Classification</a></li>
+<li class="chapter" data-level="7.6" data-path="cost-sens.html"><a href="cost-sens.html"><i class="fa fa-check"></i><b>7.6</b> Cost-Sensitive Classification</a><ul>
+<li class="chapter" data-level="7.6.1" data-path="cost-sens.html"><a href="cost-sens.html#a-first-model"><i class="fa fa-check"></i><b>7.6.1</b> A First Model</a></li>
+<li class="chapter" data-level="7.6.2" data-path="cost-sens.html"><a href="cost-sens.html#cost-sensitive-measure"><i class="fa fa-check"></i><b>7.6.2</b> Cost-sensitive Measure</a></li>
+<li class="chapter" data-level="7.6.3" data-path="cost-sens.html"><a href="cost-sens.html#thresholding"><i class="fa fa-check"></i><b>7.6.3</b> Thresholding</a></li>
+<li class="chapter" data-level="7.6.4" data-path="binary-classification.html"><a href="binary-classification.html#threshold-tuning"><i class="fa fa-check"></i><b>7.6.4</b> Threshold Tuning</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="interpretation.html"><a href="interpretation.html"><i class="fa fa-check"></i><b>8</b> Model Interpretation</a><ul>
+<li class="chapter" data-level="8.1" data-path="iml.html"><a href="iml.html"><i class="fa fa-check"></i><b>8.1</b> IML</a></li>
+<li class="chapter" data-level="8.2" data-path="interpretability-dalex.html"><a href="interpretability-dalex.html"><i class="fa fa-check"></i><b>8.2</b> DALEX</a><ul>
+<li class="chapter" data-level="8.2.1" data-path="interpretability-dalex.html"><a href="interpretability-dalex.html#interpretability-dalex-introduction"><i class="fa fa-check"></i><b>8.2.1</b> Introduction</a></li>
+<li class="chapter" data-level="8.2.2" data-path="interpretability-dalex.html"><a href="interpretability-dalex.html#interpretability-data-fifa"><i class="fa fa-check"></i><b>8.2.2</b> Read data: FIFA</a></li>
+<li class="chapter" data-level="8.2.3" data-path="interpretability-dalex.html"><a href="interpretability-dalex.html#interpretability-train-ranger"><i class="fa fa-check"></i><b>8.2.3</b> Train a model: Ranger</a></li>
+<li class="chapter" data-level="8.2.4" data-path="interpretability-dalex.html"><a href="interpretability-dalex.html#interpretability-architecture"><i class="fa fa-check"></i><b>8.2.4</b> The general workflow</a></li>
+<li class="chapter" data-level="8.2.5" data-path="interpretability-dalex.html"><a href="interpretability-dalex.html#interpretability-dataset-level"><i class="fa fa-check"></i><b>8.2.5</b> Dataset level exploration</a></li>
+<li class="chapter" data-level="8.2.6" data-path="interpretability-dalex.html"><a href="interpretability-dalex.html#interpretability-instance-level"><i class="fa fa-check"></i><b>8.2.6</b> Instance level explanation</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="appendix.html"><a href="appendix.html"><i class="fa fa-check"></i><b>9</b> Appendix</a><ul>
+<li class="chapter" data-level="9.1" data-path="list-learners.html"><a href="list-learners.html"><i class="fa fa-check"></i><b>9.1</b> Integrated Learners</a></li>
+<li class="chapter" data-level="9.2" data-path="list-measures.html"><a href="list-measures.html"><i class="fa fa-check"></i><b>9.2</b> Integrated Performance Measures</a></li>
+<li class="chapter" data-level="9.3" data-path="list-filters.html"><a href="list-filters.html"><i class="fa fa-check"></i><b>9.3</b> Integrated Filter Methods</a><ul>
+<li class="chapter" data-level="9.3.1" data-path="list-filters.html"><a href="list-filters.html#fs-filter-list"><i class="fa fa-check"></i><b>9.3.1</b> Standalone filter methods</a></li>
+<li class="chapter" data-level="9.3.2" data-path="list-filters.html"><a href="list-filters.html#fs-filter-embedded-list"><i class="fa fa-check"></i><b>9.3.2</b> Learners With Embedded Filter Methods</a></li>
+</ul></li>
+<li class="chapter" data-level="9.4" data-path="list-pipeops.html"><a href="list-pipeops.html"><i class="fa fa-check"></i><b>9.4</b> Integrated Pipe Operators</a></li>
+<li class="chapter" data-level="9.5" data-path="compare-frameworks.html"><a href="compare-frameworks.html"><i class="fa fa-check"></i><b>9.5</b> Framework Comparison</a><ul>
+<li class="chapter" data-level="9.5.1" data-path="compare-frameworks.html"><a href="compare-frameworks.html#an-introduction-to-pipeops"><i class="fa fa-check"></i><b>9.5.1</b> An introduction to “PipeOp”s</a><ul>
+<li class="chapter" data-level="9.5.1.1" data-path="compare-frameworks.html"><a href="compare-frameworks.html#a-quick-glance-into-a-pipeop"><i class="fa fa-check"></i><b>9.5.1.1</b> A quick glance into a PipeOp</a></li>
+<li class="chapter" data-level="9.5.1.2" data-path="compare-frameworks.html"><a href="compare-frameworks.html#constructing-the-pipeline"><i class="fa fa-check"></i><b>9.5.1.2</b> Constructing the Pipeline</a></li>
+</ul></li>
+<li class="chapter" data-level="9.5.2" data-path="compare-frameworks.html"><a href="compare-frameworks.html#mlr3pipelines-vs.-mlr"><i class="fa fa-check"></i><b>9.5.2</b> mlr3pipelines vs. mlr</a><ul>
+<li class="chapter" data-level="9.5.2.1" data-path="compare-frameworks.html"><a href="compare-frameworks.html#mlr"><i class="fa fa-check"></i><b>9.5.2.1</b> mlr</a></li>
+<li class="chapter" data-level="9.5.2.2" data-path="compare-frameworks.html"><a href="compare-frameworks.html#mlr3pipelines"><i class="fa fa-check"></i><b>9.5.2.2</b> mlr3pipelines</a></li>
+</ul></li>
+<li class="chapter" data-level="9.5.3" data-path="compare-frameworks.html"><a href="compare-frameworks.html#mlr3pipelines-vs.-sklearn.pipeline.pipeline"><i class="fa fa-check"></i><b>9.5.3</b> mlr3pipelines vs. sklearn.pipeline.Pipeline</a><ul>
+<li class="chapter" data-level="9.5.3.1" data-path="compare-frameworks.html"><a href="compare-frameworks.html#sklearn"><i class="fa fa-check"></i><b>9.5.3.1</b> sklearn</a></li>
+<li class="chapter" data-level="9.5.3.2" data-path="compare-frameworks.html"><a href="compare-frameworks.html#mlr3pipelines-1"><i class="fa fa-check"></i><b>9.5.3.2</b> mlr3pipelines</a></li>
+</ul></li>
+<li class="chapter" data-level="9.5.4" data-path="compare-frameworks.html"><a href="compare-frameworks.html#mlr3pipelines-vs-recipes"><i class="fa fa-check"></i><b>9.5.4</b> mlr3pipelines vs recipes</a><ul>
+<li class="chapter" data-level="9.5.4.1" data-path="compare-frameworks.html"><a href="compare-frameworks.html#recipes"><i class="fa fa-check"></i><b>9.5.4.1</b> recipes</a></li>
+<li class="chapter" data-level="9.5.4.2" data-path="compare-frameworks.html"><a href="compare-frameworks.html#mlr3pipelines-2"><i class="fa fa-check"></i><b>9.5.4.2</b> mlr3pipelines</a></li>
+</ul></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">mlr3 book</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="cost-sens" class="section level2">
+<h2><span class="header-section-number">7.6</span> Cost-Sensitive Classification</h2>
+<p>In regular classification the aim is to minimize the misclassification rate and thus all types of misclassification errors are deemed equally severe.
+A more general setting is cost-sensitive classification.
+Cost sensitive classification does not assume that the costs caused by different kinds of errors are equal.
+The objective of cost sensitive classification is to minimize the expected costs.</p>
+<p>Imagine you are an analyst for a big credit institution.
+Let’s also assume that a correct decision of the bank would result in 35% of the profit at the end of a specific period.
+A correct decision means that the bank predicts that a customer will pay their bills (hence would obtain a loan), and the customer indeed has good credit.
+On the other hand, a wrong decision means that the bank predicts that the customer’s credit is in good standing, but the opposite is true.
+This would result in a loss of 100% of the given loan.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="center"></th>
+<th align="center">Good Customer (truth)</th>
+<th align="center">Bad Customer (truth)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">Good Customer (predicted)</td>
+<td align="center">+ 0.35</td>
+<td align="center">- 1.0</td>
+</tr>
+<tr class="even">
+<td align="center">Bad Customer (predicted)</td>
+<td align="center">0</td>
+<td align="center">0</td>
+</tr>
+</tbody>
+</table>
+<p>Expressed as costs (instead of profit), we can write down the cost-matrix as follows:</p>
+<div class="sourceCode" id="cb640"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb640-1"><a href="cost-sens.html#cb640-1"></a>costs =<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">c</span>(<span class="op">-</span><span class="fl">0.35</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>), <span class="dt">nrow =</span> <span class="dv">2</span>)</span>
+<span id="cb640-2"><a href="cost-sens.html#cb640-2"></a><span class="kw">dimnames</span>(costs) =<span class="st"> </span><span class="kw">list</span>(<span class="dt">response =</span> <span class="kw">c</span>(<span class="st">&quot;good&quot;</span>, <span class="st">&quot;bad&quot;</span>), <span class="dt">truth =</span> <span class="kw">c</span>(<span class="st">&quot;good&quot;</span>, <span class="st">&quot;bad&quot;</span>))</span>
+<span id="cb640-3"><a href="cost-sens.html#cb640-3"></a><span class="kw">print</span>(costs)</span></code></pre></div>
+<pre><code>##         truth
+## response  good bad
+##     good -0.35   1
+##     bad   0.00   0</code></pre>
+<p>An exemplary data set for such a problem is the <a href="https://mlr3.mlr-org.com/reference/mlr_tasks_german_credit.html"><code>German Credit</code></a> task:</p>
+<div class="sourceCode" id="cb642"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb642-1"><a href="cost-sens.html#cb642-1"></a><span class="kw">library</span>(<span class="st">&quot;mlr3&quot;</span>)</span>
+<span id="cb642-2"><a href="cost-sens.html#cb642-2"></a>task =<span class="st"> </span><span class="kw">tsk</span>(<span class="st">&quot;german_credit&quot;</span>)</span>
+<span id="cb642-3"><a href="cost-sens.html#cb642-3"></a><span class="kw">table</span>(task<span class="op">$</span><span class="kw">truth</span>())</span></code></pre></div>
+<pre><code>## 
+## good  bad 
+##  700  300</code></pre>
+<p>The data has 70% customers who are able to pay back their credit, and 30% bad customers who default on the debt.
+A manager, who doesn’t have any model, could decide to give either everybody a credit or to give nobody a credit.
+The resulting costs for the German credit data are:</p>
+<div class="sourceCode" id="cb644"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb644-1"><a href="cost-sens.html#cb644-1"></a><span class="co"># nobody:</span></span>
+<span id="cb644-2"><a href="cost-sens.html#cb644-2"></a>(<span class="dv">700</span> <span class="op">*</span><span class="st"> </span>costs[<span class="dv">2</span>, <span class="dv">1</span>] <span class="op">+</span><span class="st"> </span><span class="dv">300</span> <span class="op">*</span><span class="st"> </span>costs[<span class="dv">2</span>, <span class="dv">2</span>]) <span class="op">/</span><span class="st"> </span><span class="dv">1000</span></span></code></pre></div>
+<pre><code>## [1] 0</code></pre>
+<div class="sourceCode" id="cb646"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb646-1"><a href="cost-sens.html#cb646-1"></a><span class="co"># everybody</span></span>
+<span id="cb646-2"><a href="cost-sens.html#cb646-2"></a>(<span class="dv">700</span> <span class="op">*</span><span class="st"> </span>costs[<span class="dv">1</span>, <span class="dv">1</span>] <span class="op">+</span><span class="st"> </span><span class="dv">300</span> <span class="op">*</span><span class="st"> </span>costs[<span class="dv">1</span>, <span class="dv">2</span>]) <span class="op">/</span><span class="st"> </span><span class="dv">1000</span></span></code></pre></div>
+<pre><code>## [1] 0.055</code></pre>
+<p>If the average loan is $20,000, the credit institute would lose more than one million dollar if it would grant everybody a credit:</p>
+<div class="sourceCode" id="cb648"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb648-1"><a href="cost-sens.html#cb648-1"></a><span class="co"># average profit * average loan * number of customers</span></span>
+<span id="cb648-2"><a href="cost-sens.html#cb648-2"></a><span class="fl">0.055</span> <span class="op">*</span><span class="st"> </span><span class="dv">20000</span> <span class="op">*</span><span class="st"> </span><span class="dv">1000</span></span></code></pre></div>
+<pre><code>## [1] 1100000</code></pre>
+<p>Our goal is to find a model which minimizes the costs (and thereby maximizes the expected profit).</p>
+<div id="a-first-model" class="section level3">
+<h3><span class="header-section-number">7.6.1</span> A First Model</h3>
+<p>For our first model, we choose an ordinary logistic regression (implemented in the add-on package <a href="https://mlr3learners.mlr-org.com">mlr3learners</a>).
+We first create a classification task, then resample the model using a 10-fold cross validation and extract the resulting confusion matrix:</p>
+<div class="sourceCode" id="cb650"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb650-1"><a href="cost-sens.html#cb650-1"></a><span class="kw">library</span>(<span class="st">&quot;mlr3learners&quot;</span>)</span>
+<span id="cb650-2"><a href="cost-sens.html#cb650-2"></a>learner =<span class="st"> </span><span class="kw">lrn</span>(<span class="st">&quot;classif.log_reg&quot;</span>)</span>
+<span id="cb650-3"><a href="cost-sens.html#cb650-3"></a>rr =<span class="st"> </span><span class="kw">resample</span>(task, learner, <span class="kw">rsmp</span>(<span class="st">&quot;cv&quot;</span>))</span>
+<span id="cb650-4"><a href="cost-sens.html#cb650-4"></a></span>
+<span id="cb650-5"><a href="cost-sens.html#cb650-5"></a>confusion =<span class="st"> </span>rr<span class="op">$</span><span class="kw">prediction</span>()<span class="op">$</span>confusion</span>
+<span id="cb650-6"><a href="cost-sens.html#cb650-6"></a><span class="kw">print</span>(confusion)</span></code></pre></div>
+<pre><code>##         truth
+## response good bad
+##     good  606 154
+##     bad    94 146</code></pre>
+<p>To calculate the average costs like above, we can simply multiply the elements of the confusion matrix with the elements of the previously introduced cost matrix, and sum the values of the resulting matrix:</p>
+<div class="sourceCode" id="cb652"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb652-1"><a href="cost-sens.html#cb652-1"></a>avg_costs =<span class="st"> </span><span class="kw">sum</span>(confusion <span class="op">*</span><span class="st"> </span>costs) <span class="op">/</span><span class="st"> </span><span class="dv">1000</span></span>
+<span id="cb652-2"><a href="cost-sens.html#cb652-2"></a><span class="kw">print</span>(avg_costs)</span></code></pre></div>
+<pre><code>## [1] -0.0581</code></pre>
+<p>With an average loan of $20,000, the logistic regression yields the following costs:</p>
+<div class="sourceCode" id="cb654"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb654-1"><a href="cost-sens.html#cb654-1"></a>avg_costs <span class="op">*</span><span class="st"> </span><span class="dv">20000</span> <span class="op">*</span><span class="st"> </span><span class="dv">1000</span></span></code></pre></div>
+<pre><code>## [1] -1162000</code></pre>
+<p>Instead of losing over $1,000,000, the credit institute now can expect a profit of more than $1,000,000.</p>
+</div>
+<div id="cost-sensitive-measure" class="section level3">
+<h3><span class="header-section-number">7.6.2</span> Cost-sensitive Measure</h3>
+<p>Our natural next step would be to further improve the modeling step in order to maximize the profit.
+For this purpose we first create a cost-sensitive classification measure which calculates the costs based on our cost matrix.
+This allows us to conveniently quantify and compare modeling decisions.
+Fortunately, there already is a predefined measure <a href="https://mlr3.mlr-org.com/reference/Measure.html"><code>Measure</code></a> for this purpose: <a href="https://mlr3.mlr-org.com/reference/mlr_measures_classif.costs.html"><code>MeasureClassifCosts</code></a>:</p>
+<div class="sourceCode" id="cb656"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb656-1"><a href="cost-sens.html#cb656-1"></a>cost_measure =<span class="st"> </span><span class="kw">msr</span>(<span class="st">&quot;classif.costs&quot;</span>, <span class="dt">costs =</span> costs)</span>
+<span id="cb656-2"><a href="cost-sens.html#cb656-2"></a><span class="kw">print</span>(cost_measure)</span></code></pre></div>
+<pre><code>## &lt;MeasureClassifCosts:classif.costs&gt;
+## * Packages: -
+## * Range: [-Inf, Inf]
+## * Minimize: TRUE
+## * Properties: requires_task
+## * Predict type: response</code></pre>
+<p>If we now call <a href="https://mlr3.mlr-org.com/reference/resample.html"><code>resample()</code></a> or <a href="https://mlr3.mlr-org.com/reference/benchmark.html"><code>benchmark()</code></a>, the cost-sensitive measures will be evaluated.
+We compare the logistic regression to a simple featureless learner and to a random forest from package <a href="https://cran.r-project.org/package=ranger">ranger</a> :</p>
+<div class="sourceCode" id="cb658"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb658-1"><a href="cost-sens.html#cb658-1"></a>learners =<span class="st"> </span><span class="kw">list</span>(</span>
+<span id="cb658-2"><a href="cost-sens.html#cb658-2"></a>  <span class="kw">lrn</span>(<span class="st">&quot;classif.log_reg&quot;</span>),</span>
+<span id="cb658-3"><a href="cost-sens.html#cb658-3"></a>  <span class="kw">lrn</span>(<span class="st">&quot;classif.featureless&quot;</span>),</span>
+<span id="cb658-4"><a href="cost-sens.html#cb658-4"></a>  <span class="kw">lrn</span>(<span class="st">&quot;classif.ranger&quot;</span>)</span>
+<span id="cb658-5"><a href="cost-sens.html#cb658-5"></a>)</span>
+<span id="cb658-6"><a href="cost-sens.html#cb658-6"></a>cv3 =<span class="st"> </span><span class="kw">rsmp</span>(<span class="st">&quot;cv&quot;</span>, <span class="dt">folds =</span> <span class="dv">3</span>)</span>
+<span id="cb658-7"><a href="cost-sens.html#cb658-7"></a>bmr =<span class="st"> </span><span class="kw">benchmark</span>(<span class="kw">benchmark_grid</span>(task, learners, cv3))</span>
+<span id="cb658-8"><a href="cost-sens.html#cb658-8"></a>bmr<span class="op">$</span><span class="kw">aggregate</span>(cost_measure)</span></code></pre></div>
+<pre><code>##    nr      resample_result       task_id          learner_id resampling_id
+## 1:  1 &lt;ResampleResult[21]&gt; german_credit     classif.log_reg            cv
+## 2:  2 &lt;ResampleResult[21]&gt; german_credit classif.featureless            cv
+## 3:  3 &lt;ResampleResult[21]&gt; german_credit      classif.ranger            cv
+##    iters classif.costs
+## 1:     3      -0.06386
+## 2:     3       0.05504
+## 3:     3      -0.05165</code></pre>
+<p>As expected, the featureless learner is performing comparably bad.
+The logistic regression and the random forest work equally well.</p>
+</div>
+<div id="thresholding" class="section level3">
+<h3><span class="header-section-number">7.6.3</span> Thresholding</h3>
+<p>Although we now correctly evaluate the models in a cost-sensitive fashion, the models themselves are unaware of the classification costs.
+They assume the same costs for both wrong classification decisions (false positives and false negatives).
+Some learners natively support cost-sensitive classification (e.g., XXX).
+However, we will concentrate on a more generic approach which works for all models which can predict probabilities for class labels: thresholding.</p>
+<p>Most learners can calculate the probability <span class="math inline">\(p\)</span> for the positive class.
+If <span class="math inline">\(p\)</span> exceeds the threshold <span class="math inline">\(0.5\)</span>, they predict the positive class, and the negative class otherwise.</p>
+<p>For our binary classification case of the credit data, the we primarily want to minimize the errors where the model predicts “good”, but truth is “bad” (i.e., the number of false positives) as this is the more expensive error.
+If we now increase the threshold to values <span class="math inline">\(&gt; 0.5\)</span>, we reduce the number of false negatives.
+Note that we increase the number of false positives simultaneously, or, in other words, we are trading false positives for false negatives.</p>
+<div class="sourceCode" id="cb660"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb660-1"><a href="cost-sens.html#cb660-1"></a><span class="co"># fit models with probability prediction</span></span>
+<span id="cb660-2"><a href="cost-sens.html#cb660-2"></a>learner =<span class="st"> </span><span class="kw">lrn</span>(<span class="st">&quot;classif.log_reg&quot;</span>, <span class="dt">predict_type =</span> <span class="st">&quot;prob&quot;</span>)</span>
+<span id="cb660-3"><a href="cost-sens.html#cb660-3"></a>rr =<span class="st"> </span><span class="kw">resample</span>(task, learner, <span class="kw">rsmp</span>(<span class="st">&quot;cv&quot;</span>))</span>
+<span id="cb660-4"><a href="cost-sens.html#cb660-4"></a>p =<span class="st"> </span>rr<span class="op">$</span><span class="kw">prediction</span>()</span>
+<span id="cb660-5"><a href="cost-sens.html#cb660-5"></a><span class="kw">print</span>(p)</span></code></pre></div>
+<pre><code>## &lt;PredictionClassif&gt; for 1000 observations:
+##     row_id truth response prob.good prob.bad
+##          3  good     good   0.95809  0.04191
+##          4  good     good   0.68398  0.31602
+##          6  good     good   0.62417  0.37583
+## ---                                         
+##        973   bad      bad   0.08402  0.91598
+##        976  good     good   0.80744  0.19256
+##        995  good     good   0.93632  0.06368</code></pre>
+<div class="sourceCode" id="cb662"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb662-1"><a href="cost-sens.html#cb662-1"></a><span class="co"># helper function to try different threshold values interactively</span></span>
+<span id="cb662-2"><a href="cost-sens.html#cb662-2"></a>with_threshold =<span class="st"> </span><span class="cf">function</span>(p, th) {</span>
+<span id="cb662-3"><a href="cost-sens.html#cb662-3"></a>  p<span class="op">$</span><span class="kw">set_threshold</span>(th)</span>
+<span id="cb662-4"><a href="cost-sens.html#cb662-4"></a>  <span class="kw">list</span>(<span class="dt">confusion =</span> p<span class="op">$</span>confusion, <span class="dt">costs =</span> p<span class="op">$</span><span class="kw">score</span>(<span class="dt">measures =</span> cost_measure, <span class="dt">task =</span> task))</span>
+<span id="cb662-5"><a href="cost-sens.html#cb662-5"></a>}</span>
+<span id="cb662-6"><a href="cost-sens.html#cb662-6"></a></span>
+<span id="cb662-7"><a href="cost-sens.html#cb662-7"></a><span class="kw">with_threshold</span>(p, <span class="fl">0.5</span>)</span></code></pre></div>
+<pre><code>## $confusion
+##         truth
+## response good bad
+##     good  609 149
+##     bad    91 151
+## 
+## $costs
+## classif.costs 
+##      -0.06415</code></pre>
+<div class="sourceCode" id="cb664"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb664-1"><a href="cost-sens.html#cb664-1"></a><span class="kw">with_threshold</span>(p, <span class="fl">0.75</span>)</span></code></pre></div>
+<pre><code>## $confusion
+##         truth
+## response good bad
+##     good  469  83
+##     bad   231 217
+## 
+## $costs
+## classif.costs 
+##      -0.08115</code></pre>
+<div class="sourceCode" id="cb666"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb666-1"><a href="cost-sens.html#cb666-1"></a><span class="kw">with_threshold</span>(p, <span class="fl">1.0</span>)</span></code></pre></div>
+<pre><code>## $confusion
+##         truth
+## response good bad
+##     good    0   0
+##     bad   700 300
+## 
+## $costs
+## classif.costs 
+##             0</code></pre>
+<div class="sourceCode" id="cb668"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb668-1"><a href="cost-sens.html#cb668-1"></a><span class="co"># </span><span class="al">TODO</span><span class="co">: include plot of threshold vs performance</span></span></code></pre></div>
+<p>Instead of manually trying different threshold values, one uses use <a href="https://www.rdocumentation.org/packages/stats/topics/optimize"><code>optimize()</code></a> to find a good threshold value w.r.t. our performance measure:</p>
+<div class="sourceCode" id="cb669"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb669-1"><a href="cost-sens.html#cb669-1"></a><span class="co"># simple wrapper function which takes a threshold and returns the resulting model performance</span></span>
+<span id="cb669-2"><a href="cost-sens.html#cb669-2"></a><span class="co"># this wrapper is passed to optimize() to find its minimum for thresholds in [0.5, 1]</span></span>
+<span id="cb669-3"><a href="cost-sens.html#cb669-3"></a>f =<span class="st"> </span><span class="cf">function</span>(th) {</span>
+<span id="cb669-4"><a href="cost-sens.html#cb669-4"></a>  <span class="kw">with_threshold</span>(p, th)<span class="op">$</span>costs</span>
+<span id="cb669-5"><a href="cost-sens.html#cb669-5"></a>}</span>
+<span id="cb669-6"><a href="cost-sens.html#cb669-6"></a>best =<span class="st"> </span><span class="kw">optimize</span>(f, <span class="kw">c</span>(<span class="fl">0.5</span>, <span class="dv">1</span>))</span>
+<span id="cb669-7"><a href="cost-sens.html#cb669-7"></a><span class="kw">print</span>(best)</span></code></pre></div>
+<pre><code>## $minimum
+## [1] 0.8084
+## 
+## $objective
+## classif.costs 
+##      -0.09155</code></pre>
+<div class="sourceCode" id="cb671"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb671-1"><a href="cost-sens.html#cb671-1"></a><span class="co"># optimized confusion matrix:</span></span>
+<span id="cb671-2"><a href="cost-sens.html#cb671-2"></a><span class="kw">with_threshold</span>(p, best<span class="op">$</span>minimum)<span class="op">$</span>confusion</span></code></pre></div>
+<pre><code>##         truth
+## response good bad
+##     good  413  53
+##     bad   287 247</code></pre>
+<p>Note that the function <a href="https://www.rdocumentation.org/packages/stats/topics/optimize"><code>optimize()</code></a> is intended for unimodal functions and therefore may converge to a local optimum here.
+See below for better alternatives to find good threshold values.</p>
+</div>
+<div id="threshold-tuning" class="section level3">
+<h3><span class="header-section-number">7.6.4</span> Threshold Tuning</h3>
+<p>More following soon!</p>
+<p>Upcoming sections will entail:</p>
+<ul>
+<li>threshold tuning as pipeline operator</li>
+<li>joint hyperparameter optimization</li>
+</ul>
+
+</div>
+</div>
+<!-- </div> -->
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="multilabel.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="interpretation.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": true,
+"facebook": false,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/mlr-org/mlr3book/edit/master/bookdown/07-special-costsens.Rmd",
+"text": "Edit this chapter"
+},
+"history": {
+"link": "https://github.com/mlr-org/mlr3book/commits/master/07-special-costsens.Rmd",
+"text": "Edit history"
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": [["mlr3book.pdf", "PDF"]],
+"toc": {
+"collapse": "section"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
